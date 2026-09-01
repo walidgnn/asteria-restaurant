@@ -103,3 +103,106 @@ model RolePermission {
   @@id([roleId, permissionId])
   @@map("role_permissions")
 }
+
+// ---------- Restaurant Info ----------
+
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  address     String
+  city        String
+  phone       String
+  email       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  openingHours OpeningHour[]
+  closures     RestaurantClosure[]
+  galleryImages GalleryImage[]
+
+  @@map("restaurants")
+}
+
+model OpeningHour {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  dayOfWeek Int      // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  openTime  String   // e.g. "09:00"
+  closeTime String   // e.g. "22:00"
+  isClosed  Boolean  @default(false) // true if restaurant is fully closed this day
+
+  @@map("opening_hours")
+}
+
+model RestaurantClosure {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  date   DateTime // specific date closed (holidays, special events)
+  reason String?
+
+  @@map("restaurant_closures")
+}
+
+model GalleryImage {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  url       String
+  altText   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("gallery_images")
+}
+
+// ---------- Menu ----------
+
+model MenuCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  dishes Dish[]
+
+  @@map("menu_categories")
+}
+
+model Dish {
+  id          String   @id @default(cuid())
+  categoryId  String
+  category    MenuCategory @relation(fields: [categoryId], references: [id])
+
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  isAvailable Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  images DishImage[]
+
+  @@map("dishes")
+}
+
+model DishImage {
+  id     String @id @default(cuid())
+  dishId String
+  dish   Dish   @relation(fields: [dishId], references: [id])
+
+  url       String
+  altText   String?
+  sortOrder Int     @default(0)
+
+  @@map("dish_images")
+}
