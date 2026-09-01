@@ -167,7 +167,7 @@ model GalleryImage {
 
 model MenuCategory {
   id          String   @id @default(cuid())
-  name        String
+  name        String   @unique
   description String?
   sortOrder   Int      @default(0)
   isActive    Boolean  @default(true)

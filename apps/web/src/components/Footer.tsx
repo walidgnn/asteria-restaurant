@@ -68,12 +68,12 @@ export function Footer() {
             </li>
             <li>
               <Link href="#" className="text-sm text-charcoal hover:text-stone">
-                Pinterest
+                TikTok
               </Link>
             </li>
             <li>
               <Link href="#" className="text-sm text-charcoal hover:text-stone">
-                Journal
+                Snapchat
               </Link>
             </li>
           </ul>
