@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# environment variables (secrets)
+.env
+.env.local
+.env.*.local
+
+# build output
+.next/
+dist/
+build/
+
+# logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+
+# Prisma
+prisma/migrations/dev.db

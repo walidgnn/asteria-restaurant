@@ -1,0 +1,11 @@
+{
+  "name": "asteria",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo \"we'll fill this in once apps exist\""
+  }
+}
