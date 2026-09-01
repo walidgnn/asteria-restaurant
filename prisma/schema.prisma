@@ -21,6 +21,8 @@ model Customer {
   updatedAt DateTime @updatedAt
 
   addresses Address[]
+  orders    Order[] 
+  reservations Reservation[]
 
   @@map("customers")
 }
@@ -191,6 +193,8 @@ model Dish {
   updatedAt   DateTime @updatedAt
 
   images DishImage[]
+  customizationGroups DishCustomizationGroup[]
+  orderItems OrderItem[]
 
   @@map("dishes")
 }
@@ -205,4 +209,193 @@ model DishImage {
   sortOrder Int     @default(0)
 
   @@map("dish_images")
+}
+
+// ---------- Dish Customizations ----------
+
+model CustomizationGroup {
+  id       String @id @default(cuid())
+  name     String // e.g. "Spice Level", "Extras"
+  isRequired Boolean @default(false) // must the customer pick one?
+  allowMultiple Boolean @default(false) // can they pick more than one option?
+
+  options CustomizationOption[]
+  dishes  DishCustomizationGroup[]
+
+  @@map("customization_groups")
+}
+
+model CustomizationOption {
+  id      String @id @default(cuid())
+  groupId String
+  group   CustomizationGroup @relation(fields: [groupId], references: [id])
+
+  name         String  // e.g. "Mild", "Extra Cheese"
+  priceModifier Decimal @db.Decimal(10, 2) @default(0) // e.g. +1.50, or 0 for free options
+  sortOrder    Int     @default(0)
+
+  orderItemCustomizations OrderItemCustomization[]
+
+  @@map("customization_options")
+}
+
+model DishCustomizationGroup {
+  dishId  String
+  groupId String
+
+  dish  Dish               @relation(fields: [dishId], references: [id])
+  group CustomizationGroup @relation(fields: [groupId], references: [id])
+
+  @@id([dishId, groupId])
+  @@map("dish_customization_groups")
+}
+
+// ---------- Orders ----------
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  dishId String
+  dish   Dish   @relation(fields: [dishId], references: [id])
+
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2) // snapshot of dish price at time of order
+
+  customizations OrderItemCustomization[]
+
+  @@map("order_items")
+}
+
+model OrderItemCustomization {
+  id          String    @id @default(cuid())
+  orderItemId String
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+
+  optionId String
+  option   CustomizationOption @relation(fields: [optionId], references: [id])
+
+  priceModifier Decimal @db.Decimal(10, 2) // snapshot of price modifier at time of order
+
+  @@map("order_item_customizations")
+}
+
+model OrderStatusHistory {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  status    OrderStatus
+  changedAt DateTime    @default(now())
+  note      String?
+
+  @@map("order_status_history")
+}
+
+// ---------- Dining Tables ----------
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  UNAVAILABLE
+}
+
+model DiningTable {
+  id       String @id @default(cuid())
+  number   String // e.g. "T1", "Patio 3"
+  capacity Int
+  status   TableStatus @default(AVAILABLE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservations  Reservation[]
+  statusHistory TableStatusHistory[]
+
+  @@map("dining_tables")
+}
+
+model TableStatusHistory {
+  id      String      @id @default(cuid())
+  tableId String
+  table   DiningTable @relation(fields: [tableId], references: [id])
+
+  status    TableStatus
+  changedAt DateTime    @default(now())
+  note      String?
+
+  @@map("table_status_history")
+}
+
+// ---------- Reservations ----------
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  SEATED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model Reservation {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  tableId String?
+  table   DiningTable? @relation(fields: [tableId], references: [id])
+
+  partySize       Int
+  reservationDate DateTime
+  status          ReservationStatus @default(PENDING)
+  notes           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusHistory ReservationStatusHistory[]
+
+  @@map("reservations")
+}
+
+model ReservationStatusHistory {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  status    ReservationStatus
+  changedAt DateTime          @default(now())
+  note      String?
+
+  @@map("reservation_status_history")
 }
