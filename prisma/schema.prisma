@@ -275,6 +275,7 @@ model Order {
 
   items         OrderItem[]
   statusHistory OrderStatusHistory[]
+  payment       Payment? 
 
   @@map("orders")
 }
@@ -398,4 +399,35 @@ model ReservationStatusHistory {
   note      String?
 
   @@map("reservation_status_history")
+}
+
+// ---------- Payment ----------
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CARD
+  CASH
+}
+
+model Payment {
+  id      String @id @default(cuid())
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  amount Decimal       @db.Decimal(10, 2)
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+
+  transactionRef String? // reference from a payment provider, if using one
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
 }
