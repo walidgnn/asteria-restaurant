@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: asteria-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: asteria
+      POSTGRES_PASSWORD: asteria_dev_password
+      POSTGRES_DB: asteria
+    ports:
+      - "5433:5432"
+    volumes:
+      - asteria_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  asteria_postgres_data:

@@ -26,3 +26,7 @@ Thumbs.db
 
 # Prisma
 prisma/migrations/dev.db
+/generated/prisma
+
+# Prisma generated client
+/generated
