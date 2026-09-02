@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { User, ShoppingBag } from "lucide-react";
+import { CartButton } from "@/components/CartButton";
 
 const NAV_LINKS = [
   { label: "Menu", href: "/menu" },
@@ -42,9 +43,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
           <Link href="/login" aria-label="Account">
             <User size={20} strokeWidth={1.5} />
           </Link>
-          <Link href="/cart" aria-label="Cart">
-            <ShoppingBag size={20} strokeWidth={1.5} />
-          </Link>
+          <CartButton solid={solid} />
           <Link
             href="/reservations"
             className={`border ${borderColor} px-5 py-2.5 text-sm font-medium tracking-wide ${textColor} transition-colors hover:${solid ? "bg-charcoal hover:text-cream" : "bg-white hover:text-charcoal"}`}

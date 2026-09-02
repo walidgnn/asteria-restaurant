@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Plus, Search } from "lucide-react";
 import type { MenuCategory } from "@/lib/api";
+import { useCart } from "@/lib/cart-context";
+
 
 const TAGLINES: Record<string, string> = {
   "Small Plates": "TO START",
@@ -19,6 +21,7 @@ const TAGLINES: Record<string, string> = {
 
 export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
   const [active, setActive] = useState("All");
+  const { addItem } = useCart();
 
   const visibleCategories =
     active === "All"
@@ -90,9 +93,18 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
                     {dish.description}
                   </p>
                 )}
-                <button className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-charcoal">
-                  <Plus size={12} strokeWidth={2} />
-                  ADD
+                <button
+                    onClick={() =>
+                        addItem({
+                        id: dish.id,
+                        name: dish.name,
+                        price: parseFloat(dish.price),
+                        })
+                    }
+                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-charcoal transition-colors hover:text-terracotta"
+                    >
+                    <Plus size={12} strokeWidth={2} />
+                    ADD
                 </button>
               </div>
             ))}
