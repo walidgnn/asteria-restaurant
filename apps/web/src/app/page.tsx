@@ -8,8 +8,21 @@ import { Testimonial } from "@/components/Testimonial";
 import { CallToAction } from "@/components/CallToAction";
 import { Footer } from "@/components/Footer";
 import { FadeIn } from "@/components/FadeIn";
+import { getMenu } from "@/lib/api";
 
-export default function Home() {
+const FEATURED_DISH_NAMES = [
+  "Grilled Octopus",
+  "Mediterranean Sea Bass",
+  "Baklava Cheesecake",
+];
+
+export default async function Home() {
+  const categories = await getMenu();
+  const allDishes = categories.flatMap((c) => c.dishes);
+  const featuredDishes = FEATURED_DISH_NAMES.map((name) =>
+    allDishes.find((d) => d.name === name)
+  ).filter((d): d is NonNullable<typeof d> => Boolean(d));
+
   return (
     <>
       <Header />
@@ -28,7 +41,7 @@ export default function Home() {
         />
       </FadeIn>
       <FadeIn>
-        <SignatureDishes />
+        <SignatureDishes dishes={featuredDishes} />
       </FadeIn>
       <FadeIn>
         <Philosophy />
