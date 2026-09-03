@@ -20,9 +20,17 @@ type Order = {
   items: OrderItem[];
 };
 
+type Reservation = {
+  id: string;
+  partySize: number;
+  reservationDate: string;
+  status: string;
+};
+
 export default function AccountOverviewPage() {
   const { customer, token } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [reservations, setReservations] = useState<Reservation[] | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -31,10 +39,23 @@ export default function AccountOverviewPage() {
     })
       .then((res) => res.json())
       .then(setOrders);
+
+    fetch("http://localhost:3001/reservations", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then(setReservations);
   }, [token]);
 
-  const activeOrder = orders?.find((o) => o.status !== "COMPLETED" && o.status !== "CANCELLED");
+  const activeOrder = orders?.find(
+    (o) => o.status !== "COMPLETED" && o.status !== "CANCELLED"
+  );
   const recentOrders = orders?.slice(0, 3) ?? [];
+
+  const now = new Date();
+  const upcomingReservation = reservations
+    ?.filter((r) => new Date(r.reservationDate) >= now && r.status !== "CANCELLED")
+    .sort((a, b) => +new Date(a.reservationDate) - +new Date(b.reservationDate))[0];
 
   return (
     <div>
@@ -91,12 +112,50 @@ export default function AccountOverviewPage() {
         <p className="text-xs font-medium tracking-[0.15em] text-terracotta">
           UPCOMING RESERVATION
         </p>
-        <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-stone">You have no upcoming reservations.</p>
-          <Link href="/reservations" className="text-sm font-medium tracking-wide text-charcoal">
-            RESERVE A TABLE →
-          </Link>
-        </div>
+
+        {!reservations ? (
+          <p className="mt-4 text-stone">Loading...</p>
+        ) : upcomingReservation ? (
+          <div className="mt-4">
+            <p className="font-serif text-2xl text-charcoal">
+              Asteria Main Dining
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-4 text-sm text-stone sm:max-w-xs">
+              <div>
+                <p className="text-xs tracking-wide">DATE</p>
+                <p className="mt-1 text-charcoal">
+                  {new Date(upcomingReservation.reservationDate).toLocaleDateString(undefined, {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs tracking-wide">TIME</p>
+                <p className="mt-1 text-charcoal">
+                  {new Date(upcomingReservation.reservationDate).toLocaleTimeString(undefined, {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/account/reservations/${upcomingReservation.id}`}
+              className="mt-4 inline-block text-sm font-medium tracking-wide text-charcoal"
+            >
+              VIEW RESERVATION →
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-stone">You have no upcoming reservations.</p>
+            <Link href="/reservations" className="text-sm font-medium tracking-wide text-charcoal">
+              RESERVE A TABLE →
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="mt-10 border-t border-border pt-8">
