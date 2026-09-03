@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from "@nest
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { ReservationsService } from "./reservations.service";
 import { CreateReservationDto } from "./dto/create-reservation.dto";
+import { UpdateReservationDto } from "./dto/update-reservation.dto";
 
 @UseGuards(JwtAuthGuard)
 @Controller("reservations")
@@ -26,5 +27,10 @@ export class ReservationsController {
   @Patch(":id/cancel")
   cancel(@Req() req: any, @Param("id") id: string) {
     return this.reservationsService.cancel(req.user.id, id);
+  }
+
+    @Patch(":id")
+  update(@Req() req: any, @Param("id") id: string, @Body() dto: UpdateReservationDto) {
+    return this.reservationsService.update(req.user.id, id, dto);
   }
 }

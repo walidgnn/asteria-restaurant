@@ -114,12 +114,12 @@ export default function ReservationDetailsPage() {
 
           {reservation.status !== "CANCELLED" && (
             <div className="mt-8 flex items-center gap-6">
-              <button
-                disabled
-                className="bg-olive px-6 py-3 text-sm font-medium tracking-wide text-white opacity-60"
+                            <Link
+                href={`/account/reservations/${reservation.id}/modify`}
+                className="bg-olive px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-olive-dark"
               >
                 MODIFY RESERVATION →
-              </button>
+              </Link>
               <button
                 onClick={handleCancel}
                 disabled={cancelling}

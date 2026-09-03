@@ -1,6 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateReservationDto } from "./dto/create-reservation.dto";
+import { UpdateReservationDto } from "./dto/update-reservation.dto";
 
 @Injectable()
 export class ReservationsService {
@@ -52,6 +53,63 @@ export class ReservationsService {
         status: "CONFIRMED",
         statusHistory: {
           create: { status: "CONFIRMED", note: "Reservation booked." },
+        },
+      },
+      include: { table: true },
+    });
+  }
+
+    async update(customerId: string, id: string, dto: UpdateReservationDto) {
+    const existing = await this.findOne(customerId, id); // ownership + existence check
+
+    if (existing.status === "CANCELLED" || existing.status === "COMPLETED") {
+      throw new ConflictException("This reservation can no longer be modified.");
+    }
+
+    const [hours, minutes] = dto.time.split(":").map(Number);
+    const reservationDate = new Date(dto.date);
+    reservationDate.setHours(hours, minutes, 0, 0);
+
+    const candidateTables = await this.prisma.diningTable.findMany({
+      where: { capacity: { gte: dto.partySize } },
+      orderBy: { capacity: "asc" },
+    });
+
+    if (candidateTables.length === 0) {
+      throw new ConflictException(
+        "No table can accommodate this party size. Please contact us directly for large parties."
+      );
+    }
+
+    // Exclude this reservation itself from the conflict check, so its own table
+    // doesn't count as "taken" if the date/time didn't actually change.
+    const conflicting = await this.prisma.reservation.findMany({
+      where: {
+        id: { not: id },
+        reservationDate,
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        tableId: { in: candidateTables.map((t) => t.id) },
+      },
+      select: { tableId: true },
+    });
+    const bookedTableIds = new Set(conflicting.map((r) => r.tableId));
+    const availableTable = candidateTables.find((t) => !bookedTableIds.has(t.id));
+
+    if (!availableTable) {
+      throw new ConflictException(
+        "We're fully booked for that time. Please choose a different time or date."
+      );
+    }
+
+    return this.prisma.reservation.update({
+      where: { id },
+      data: {
+        table: { connect: { id: availableTable.id } },
+        partySize: dto.partySize,
+        reservationDate,
+        notes: dto.notes,
+        statusHistory: {
+          create: { status: existing.status, note: "Reservation modified." },
         },
       },
       include: { table: true },
