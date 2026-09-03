@@ -121,10 +121,21 @@ async function main() {
       },
     });
 
-    for (let j = 0; j < cat.dishes.length; j++) {
+        for (let j = 0; j < cat.dishes.length; j++) {
       const dish = cat.dishes[j];
-      await prisma.dish.create({
-        data: {
+      await prisma.dish.upsert({
+        where: {
+          categoryId_name: {
+            categoryId: category.id,
+            name: dish.name,
+          },
+        },
+        update: {
+          description: dish.description,
+          price: dish.price,
+          sortOrder: j,
+        },
+        create: {
           categoryId: category.id,
           name: dish.name,
           description: dish.description,
@@ -138,6 +149,39 @@ async function main() {
   }
 
   console.log("Seed complete.");
+
+  console.log("Seeding dining tables...");
+  const existingTables = await prisma.diningTable.count();
+  if (existingTables === 0) {
+    const tables = [
+      { number: "T1", capacity: 2 },
+      { number: "T2", capacity: 2 },
+      { number: "T3", capacity: 2 },
+      { number: "T4", capacity: 2 },
+      { number: "T5", capacity: 2 },
+      { number: "T6", capacity: 2 },
+      { number: "T7", capacity: 4 },
+      { number: "T8", capacity: 4 },
+      { number: "T9", capacity: 4 },
+      { number: "T10", capacity: 4 },
+      { number: "T11", capacity: 4 },
+      { number: "T12", capacity: 4 },
+      { number: "T13", capacity: 6 },
+      { number: "T14", capacity: 6 },
+      { number: "T15", capacity: 6 },
+      { number: "T16", capacity: 6 },
+      { number: "T17", capacity: 6 },
+      { number: "T18", capacity: 6 },
+      { number: "T19", capacity: 8 },
+      { number: "T20", capacity: 8 },
+    ];
+    for (const t of tables) {
+      await prisma.diningTable.create({ data: t });
+    }
+    console.log(`  ✓ ${tables.length} tables created`);
+  } else {
+    console.log("  → tables already exist, skipping");
+  }
 }
 
 main()

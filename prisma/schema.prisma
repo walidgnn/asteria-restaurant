@@ -197,6 +197,7 @@ model Dish {
   customizationGroups DishCustomizationGroup[]
   orderItems OrderItem[]
 
+  @@unique([categoryId, name])
   @@map("dishes")
 }
 
