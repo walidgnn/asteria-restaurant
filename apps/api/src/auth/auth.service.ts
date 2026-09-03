@@ -61,4 +61,21 @@ export class AuthService {
       customer: { id, email, firstName, lastName },
     };
   }
+    async updateProfile(
+    customerId: string,
+    dto: { firstName?: string; lastName?: string; phone?: string }
+  ) {
+    const customer = await this.prisma.customer.update({
+      where: { id: customerId },
+      data: dto,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+      },
+    });
+    return customer;
+  }
 }

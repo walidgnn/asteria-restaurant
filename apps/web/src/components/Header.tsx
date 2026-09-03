@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import { User, ShoppingBag } from "lucide-react";
+import { User } from "lucide-react";
 import { CartButton } from "@/components/CartButton";
+import { useAuth } from "@/lib/auth-context";
 
 const NAV_LINKS = [
   { label: "Menu", href: "/menu" },
@@ -13,6 +16,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
   const textColor = solid ? "text-charcoal" : "text-white";
   const subTextColor = solid ? "text-stone" : "text-white/90";
   const borderColor = solid ? "border-charcoal/70" : "border-white/70";
+  const { customer } = useAuth();
 
   return (
     <header
@@ -40,9 +44,12 @@ export function Header({ solid = false }: { solid?: boolean }) {
         </nav>
 
         <div className={`flex items-center gap-5 ${textColor}`}>
-          <Link href="/login" aria-label="Account">
-            <User size={20} strokeWidth={1.5} />
-          </Link>
+            <Link
+              href={customer ? "/account" : "/login"}
+              aria-label={customer ? "My Account" : "Sign In"}
+            >
+              <User size={20} strokeWidth={1.5} />
+            </Link>
           <CartButton solid={solid} />
           <Link
             href="/reservations"
