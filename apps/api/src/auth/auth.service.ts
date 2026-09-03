@@ -61,9 +61,15 @@ export class AuthService {
       customer: { id, email, firstName, lastName },
     };
   }
-    async updateProfile(
+      async updateProfile(
     customerId: string,
-    dto: { firstName?: string; lastName?: string; phone?: string }
+    dto: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      marketingOptIn?: boolean;
+      reservationReminders?: boolean;
+    }
   ) {
     const customer = await this.prisma.customer.update({
       where: { id: customerId },
@@ -74,8 +80,33 @@ export class AuthService {
         firstName: true,
         lastName: true,
         phone: true,
+        marketingOptIn: true,
+        reservationReminders: true,
       },
     });
     return customer;
+  }
+
+  async changePassword(
+    customerId: string,
+    dto: { currentPassword: string; newPassword: string }
+  ) {
+    const customer = await this.prisma.customer.findUnique({
+      where: { id: customerId },
+    });
+    if (!customer) throw new UnauthorizedException();
+
+    const valid = await bcrypt.compare(dto.currentPassword, customer.password);
+    if (!valid) {
+      throw new UnauthorizedException("Current password is incorrect.");
+    }
+
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.customer.update({
+      where: { id: customerId },
+      data: { password: hashed },
+    });
+
+    return { success: true };
   }
 }

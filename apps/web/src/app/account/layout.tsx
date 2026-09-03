@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, UtensilsCrossed, Calendar, User, Settings, LogOut } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/account", icon: LayoutGrid },
@@ -30,6 +29,27 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   return (
     <RequireAuth>
       <Header solid />
+
+      {/* Mobile top tab bar */}
+      <div className="border-b border-border md:hidden">
+        <nav className="flex gap-6 overflow-x-auto px-6 py-4">
+          {NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`whitespace-nowrap text-sm font-medium tracking-wide ${
+                  isActive ? "text-terracotta underline underline-offset-4" : "text-stone"
+                }`}
+              >
+                {item.label.toUpperCase()}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
       <div className="mx-auto flex max-w-7xl">
         <aside className="hidden w-64 shrink-0 border-r border-border px-6 py-12 md:block">
           <p className="text-xs tracking-wide text-stone">Welcome back,</p>

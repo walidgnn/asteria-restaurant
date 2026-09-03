@@ -16,11 +16,13 @@ model Customer {
   firstName String
   lastName  String
   phone     String?
+  marketingOptIn        Boolean  @default(false)
+  reservationReminders  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  addresses Address[]
-  orders    Order[] 
+  addresses    Address[]
+  orders       Order[]
   reservations Reservation[]
 
   @@map("customers")
