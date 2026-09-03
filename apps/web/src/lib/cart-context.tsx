@@ -29,6 +29,7 @@ type CartContextType = {
   addItem: (item: { id: string; name: string; price: number }) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
   itemCount: number;
   subtotal: number;
   lastOrder: OrderDetails | null;
@@ -88,6 +89,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((i) => i.id !== id));
   }
 
+  function clearCart() {
+    setItems([]);
+  }
+
   function updateQuantity(id: string, quantity: number) {
     if (quantity <= 0) {
       removeItem(id);
@@ -129,6 +134,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         lastOrder,
         placeOrder,
         toastMessage,
+        clearCart,
       }}
     >
       {children}

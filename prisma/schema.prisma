@@ -262,10 +262,12 @@ enum OrderStatus {
 
 model Order {
   id         String   @id @default(cuid())
+  orderNumber Int     @unique @default(autoincrement())
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
   status      OrderStatus @default(PENDING)
+  orderType   String      @default("pickup")
   totalAmount Decimal     @db.Decimal(10, 2)
   notes       String?
 
@@ -274,7 +276,7 @@ model Order {
 
   items         OrderItem[]
   statusHistory OrderStatusHistory[]
-  payment       Payment? 
+  payment       Payment?
 
   @@map("orders")
 }

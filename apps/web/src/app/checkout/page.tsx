@@ -2,32 +2,85 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/lib/cart-context";
+import { useAuth } from "@/lib/auth-context";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal, placeOrder } = useCart();
+  const { items, subtotal, clearCart } = useCart();
+  const { customer, token, loading } = useAuth();
   const [orderType, setOrderType] = useState<"pickup" | "delivery">("pickup");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
+
+    if (!customer || !token) {
+      router.push("/login?redirect=/checkout");
+      return;
+    }
+
     const form = new FormData(e.currentTarget);
-    const firstName = form.get("firstName") as string;
-    const lastName = form.get("lastName") as string;
-    const email = form.get("email") as string;
+    const notes = form.get("notes") as string;
 
     setSubmitting(true);
-    setTimeout(() => {
-      const orderId = placeOrder({
-        customerName: `${firstName} ${lastName}`.trim(),
-        email,
-        orderType,
+    try {
+      const res = await fetch("http://localhost:3001/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: items.map((i) => ({ dishId: i.id, quantity: i.quantity })),
+          orderType,
+          notes: notes || undefined,
+        }),
       });
-      router.push(`/order-confirmation?order=${orderId}`);
-    }, 600);
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.message || "Failed to place order.");
+      }
+
+      const order = await res.json();
+      clearCart();
+      router.push(`/order-confirmation?order=${order.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (loading) return null;
+
+  if (!customer) {
+    return (
+      <>
+        <Header solid />
+        <div className="mx-auto max-w-2xl px-8 py-24 text-center">
+          <h1 className="font-serif text-3xl text-charcoal">
+            Please sign in to check out.
+          </h1>
+          <p className="mt-3 text-stone">
+            You&apos;ll need an account to place an order.
+          </p>
+          <Link
+            href="/login?redirect=/checkout"
+            className="mt-6 inline-block bg-olive px-8 py-3.5 text-sm font-medium tracking-wide text-white hover:bg-olive-dark"
+          >
+            SIGN IN →
+          </Link>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   if (items.length === 0) {
@@ -53,38 +106,20 @@ export default function CheckoutPage() {
         <h1 className="font-serif text-5xl text-charcoal">Checkout</h1>
         <p className="mt-3 text-stone">Complete your order.</p>
 
+        {error && (
+          <p className="mt-6 max-w-2xl border border-terracotta/40 bg-terracotta/10 px-4 py-3 text-sm text-terracotta">
+            {error}
+          </p>
+        )}
+
         <form onSubmit={handleSubmit} className="mt-10 grid gap-12 lg:grid-cols-[1fr_360px]">
           <div>
             <h2 className="font-serif text-2xl text-charcoal">
               Contact Information
             </h2>
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <input
-                name="firstName"
-                required
-                placeholder="First Name"
-                className="border border-border bg-transparent px-4 py-3 text-sm text-charcoal placeholder:text-stone/70 focus:border-charcoal focus:outline-none"
-              />
-              <input
-                name="lastName"
-                required
-                placeholder="Last Name"
-                className="border border-border bg-transparent px-4 py-3 text-sm text-charcoal placeholder:text-stone/70 focus:border-charcoal focus:outline-none"
-              />
-              <input
-                name="email"
-                type="email"
-                required
-                placeholder="Email Address"
-                className="border border-border bg-transparent px-4 py-3 text-sm text-charcoal placeholder:text-stone/70 focus:border-charcoal focus:outline-none sm:col-span-2"
-              />
-              <input
-                name="phone"
-                type="tel"
-                placeholder="Phone Number"
-                className="border border-border bg-transparent px-4 py-3 text-sm text-charcoal placeholder:text-stone/70 focus:border-charcoal focus:outline-none sm:col-span-2"
-              />
-            </div>
+            <p className="mt-2 text-sm text-stone">
+              Ordering as {customer.firstName} {customer.lastName} ({customer.email})
+            </p>
 
             <h2 className="mt-10 font-serif text-2xl text-charcoal">
               Order Type
@@ -93,7 +128,6 @@ export default function CheckoutPage() {
               <label className="flex items-center gap-2 text-sm text-charcoal">
                 <input
                   type="radio"
-                  name="orderType"
                   checked={orderType === "pickup"}
                   onChange={() => setOrderType("pickup")}
                 />
@@ -102,7 +136,6 @@ export default function CheckoutPage() {
               <label className="flex items-center gap-2 text-sm text-charcoal">
                 <input
                   type="radio"
-                  name="orderType"
                   checked={orderType === "delivery"}
                   onChange={() => setOrderType("delivery")}
                 />
@@ -155,7 +188,9 @@ export default function CheckoutPage() {
             <div className="mt-6 space-y-4">
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
-                  <span className="text-charcoal">{item.name}</span>
+                  <span className="text-charcoal">
+                    {item.name} × {item.quantity}
+                  </span>
                   <span className="text-terracotta">
                     €{(item.price * item.quantity).toFixed(2)}
                   </span>
