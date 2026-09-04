@@ -24,8 +24,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         phone: true,
         marketingOptIn: true,
         reservationReminders: true,
+        deletedAt: true,
       },
     });
+    if (!customer || customer.deletedAt) return null;
     return customer;
   }
 }

@@ -8,6 +8,7 @@ import * as bcrypt from "bcrypt";
 import { PrismaService } from "../prisma/prisma.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import * as crypto from "crypto";
 
 @Injectable()
 export class AuthService {
@@ -42,7 +43,7 @@ export class AuthService {
     const customer = await this.prisma.customer.findUnique({
       where: { email: dto.email },
     });
-    if (!customer) {
+    if (!customer || customer.deletedAt) {
       throw new UnauthorizedException("Invalid email or password.");
     }
 
@@ -105,6 +106,27 @@ export class AuthService {
     await this.prisma.customer.update({
       where: { id: customerId },
       data: { password: hashed },
+    });
+
+    return { success: true };
+  }
+
+    async deleteAccount(customerId: string) {
+    const customer = await this.prisma.customer.findUnique({
+      where: { id: customerId },
+    });
+    if (!customer) throw new UnauthorizedException();
+
+    await this.prisma.customer.update({
+      where: { id: customerId },
+      data: {
+        email: `deleted-${customerId}@asteria-deleted.com`,
+        firstName: "Deleted",
+        lastName: "User",
+        phone: null,
+        password: await bcrypt.hash(crypto.randomUUID(), 10), // unusable random password
+        deletedAt: new Date(),
+      },
     });
 
     return { success: true };

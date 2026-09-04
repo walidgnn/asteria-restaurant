@@ -12,9 +12,10 @@
     "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@types/node": "^26.4.1",
     "tsx": "^4.23.13"
   },
-  "prisma": { 
-  "seed": "tsx prisma/seed.ts" 
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

@@ -18,6 +18,7 @@ model Customer {
   phone     String?
   marketingOptIn        Boolean  @default(false)
   reservationReminders  Boolean  @default(true)
+  deletedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

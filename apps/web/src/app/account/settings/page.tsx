@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
+import { useRouter } from "next/navigation";
 
 type Preferences = {
   marketingOptIn: boolean;
@@ -14,6 +15,8 @@ export default function SettingsPage() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteNotice, setShowDeleteNotice] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!token) return;
@@ -121,14 +124,29 @@ export default function SettingsPage() {
 
       <div className="mt-10 border-t border-border pt-8">
         {showDeleteNotice ? (
-          <p className="text-sm text-stone">
-            To delete your account, please contact us at{" "}
-            <a href="mailto:hello@asteria-restaurant.com" className="text-terracotta">
-              hello@asteria-restaurant.com
-            </a>{" "}
-            — we want to make sure your order and reservation history is
-            handled properly.
-          </p>
+          <div className="max-w-md">
+            <p className="text-sm text-stone">
+              This will permanently deactivate your account. Your order and
+              reservation history will be retained for our records, but your
+              personal information will be removed and you will no longer be
+              able to sign in. This cannot be undone.
+            </p>
+            <div className="mt-4 flex gap-4">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="bg-terracotta px-6 py-2.5 text-sm font-medium tracking-wide text-white transition-colors hover:opacity-90 disabled:opacity-60"
+              >
+                {deleting ? "DELETING..." : "YES, DELETE MY ACCOUNT"}
+              </button>
+              <button
+                onClick={() => setShowDeleteNotice(false)}
+                className="text-sm font-medium tracking-wide text-charcoal"
+              >
+                CANCEL
+              </button>
+            </div>
+          </div>
         ) : (
           <button
             onClick={() => setShowDeleteNotice(true)}
@@ -144,6 +162,19 @@ export default function SettingsPage() {
       )}
     </div>
   );
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await fetch("http://localhost:3001/auth/me", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      logout();
+      router.push("/");
+    } catch {
+      setDeleting(false);
+    }
+  }
 }
 
 function Toggle({
