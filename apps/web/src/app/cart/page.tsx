@@ -30,61 +30,70 @@ export default function CartPage() {
         ) : (
           <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_360px]">
             <div className="border-t border-border">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-start justify-between gap-6 border-b border-border py-8"
-                >
-                  <div className="flex-1">
-                    <h3 className="font-serif text-2xl text-charcoal">
-                      {item.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-terracotta">
-                      €{item.price.toFixed(2)}
-                    </p>
-
-                    <div className="mt-4 flex items-center gap-3">
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
-                        }
-                        aria-label="Decrease quantity"
-                        className="flex h-8 w-8 items-center justify-center border border-border text-charcoal hover:border-charcoal"
-                      >
-                        <Minus size={13} />
-                      </button>
-                      <span className="w-5 text-center text-sm text-charcoal">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
-                        aria-label="Increase quantity"
-                        className="flex h-8 w-8 items-center justify-center border border-border text-charcoal hover:border-charcoal"
-                      >
-                        <Plus size={13} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-3">
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="flex items-center gap-1.5 text-xs text-stone hover:text-terracotta"
+              {items.map((item) => {
+                const modifiersTotal = item.customizations.reduce((s, c) => s + c.priceModifier, 0);
+                const unitPrice = item.basePrice + modifiersTotal;
+                return (
+                    <div
+                    key={item.lineId}
+                    className="flex items-start justify-between gap-6 border-b border-border py-8"
                     >
-                      <Trash2 size={13} />
-                      REMOVE
-                    </button>
-                    <div className="text-right">
-                      <p className="text-xs text-stone">Item Total</p>
-                      <p className="text-charcoal">
-                        €{(item.price * item.quantity).toFixed(2)}
-                      </p>
+                    <div className="flex-1">
+                        <h3 className="font-serif text-2xl text-charcoal">
+                        {item.name}
+                        </h3>
+                        {item.customizations.length > 0 && (
+                        <ul className="mt-1 space-y-0.5">
+                            {item.customizations.map((c) => (
+                            <li key={c.optionId} className="text-xs text-stone">
+                                + {c.name} {c.priceModifier > 0 ? `(+€${c.priceModifier.toFixed(2)})` : ""}
+                            </li>
+                            ))}
+                        </ul>
+                        )}
+                        <p className="mt-1 text-sm text-terracotta">
+                        €{unitPrice.toFixed(2)}
+                        </p>
+
+                        <div className="mt-4 flex items-center gap-3">
+                        <button
+                            onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
+                            aria-label="Decrease quantity"
+                            className="flex h-8 w-8 items-center justify-center border border-border text-charcoal hover:border-charcoal"
+                        >
+                            <Minus size={13} />
+                        </button>
+                        <span className="w-5 text-center text-sm text-charcoal">
+                            {item.quantity}
+                        </span>
+                        <button
+                            onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
+                            aria-label="Increase quantity"
+                            className="flex h-8 w-8 items-center justify-center border border-border text-charcoal hover:border-charcoal"
+                        >
+                            <Plus size={13} />
+                        </button>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+
+                    <div className="flex flex-col items-end gap-3">
+                        <button
+                        onClick={() => removeItem(item.lineId)}
+                        className="flex items-center gap-1.5 text-xs text-stone hover:text-terracotta"
+                        >
+                        <Trash2 size={13} />
+                        REMOVE
+                        </button>
+                        <div className="text-right">
+                        <p className="text-xs text-stone">Item Total</p>
+                        <p className="text-charcoal">
+                            €{(unitPrice * item.quantity).toFixed(2)}
+                        </p>
+                        </div>
+                    </div>
+                    </div>
+                );
+                })}
             </div>
 
             <div className="h-fit bg-mist px-8 py-8">

@@ -148,7 +148,7 @@ async function main() {
     console.log(`  ✓ ${cat.name} (${cat.dishes.length} dishes)`);
   }
 
-  console.log("Seed complete.");
+  
 
   console.log("Seeding dining tables...");
   const existingTables = await prisma.diningTable.count();
@@ -182,6 +182,78 @@ async function main() {
   } else {
     console.log("  → tables already exist, skipping");
   }
+
+    console.log("Seeding customizations...");
+
+  async function ensureGroup(
+    name: string,
+    isRequired: boolean,
+    allowMultiple: boolean,
+    options: { name: string; priceModifier: number }[]
+  ) {
+    let group = await prisma.customizationGroup.findFirst({ where: { name } });
+    if (!group) {
+      group = await prisma.customizationGroup.create({
+        data: { name, isRequired, allowMultiple },
+      });
+      for (let i = 0; i < options.length; i++) {
+        await prisma.customizationOption.create({
+          data: {
+            groupId: group.id,
+            name: options[i].name,
+            priceModifier: options[i].priceModifier,
+            sortOrder: i,
+          },
+        });
+      }
+      console.log(`  ✓ ${name} (${options.length} options)`);
+    } else {
+      console.log(`  → ${name} already exists, skipping`);
+    }
+    return group;
+  }
+
+  const extrasGroup = await ensureGroup("Extras", false, true, [
+    { name: "Extra Lemon Emulsion", priceModifier: 2 },
+    { name: "Extra Fresh Herbs", priceModifier: 1 },
+    { name: "Extra Cheese", priceModifier: 1.5 },
+  ]);
+
+  const spiceGroup = await ensureGroup("Spice Level", true, false, [
+    { name: "Mild", priceModifier: 0 },
+    { name: "Medium", priceModifier: 0 },
+    { name: "Hot", priceModifier: 0 },
+  ]);
+
+  async function attachGroup(dishName: string, groupId: string) {
+    const dish = await prisma.dish.findFirst({ where: { name: dishName } });
+    if (!dish) return;
+    await prisma.dishCustomizationGroup.upsert({
+      where: { dishId_groupId: { dishId: dish.id, groupId } },
+      update: {},
+      create: { dishId: dish.id, groupId },
+    });
+  }
+
+  const extrasEligible = [
+    "Grilled Octopus", "Seared Scallops", "Roasted Eggplant", "Tuna Crudo",
+    "Asteria Greek Salad", "Charred Prawns", "Mediterranean Sea Bass",
+    "Grilled Salmon", "Charred Prawns & Orzo", "Grilled Swordfish",
+    "Lemon & Herb Orzo", "Wild Mushroom Linguine", "Prawn Linguine",
+    "Lamb Ragu Pappardelle",
+  ];
+  for (const name of extrasEligible) {
+    await attachGroup(name, extrasGroup.id);
+  }
+
+  const spiceEligible = ["Asteria Chicken", "Lamb Chops", "Beef Tenderloin", "Grilled Ribeye"];
+  for (const name of spiceEligible) {
+    await attachGroup(name, spiceGroup.id);
+  }
+
+  console.log("Customizations linked.");
+
+  console.log("Seed complete.");
 }
 
 main()

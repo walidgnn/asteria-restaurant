@@ -17,4 +17,23 @@ export class MenuService {
       },
     });
   }
+
+    async getDishById(id: string) {
+    return this.prisma.dish.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        images: { orderBy: { sortOrder: "asc" } },
+        customizationGroups: {
+          include: {
+            group: {
+              include: {
+                options: { orderBy: { sortOrder: "asc" } },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }

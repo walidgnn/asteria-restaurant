@@ -37,7 +37,11 @@ export default function CheckoutPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          items: items.map((i) => ({ dishId: i.id, quantity: i.quantity })),
+          items: items.map((i) => ({
+            dishId: i.dishId,
+            quantity: i.quantity,
+            optionIds: i.customizations.map((c) => c.optionId),
+          })),
           orderType,
           notes: notes || undefined,
         }),
@@ -186,16 +190,19 @@ export default function CheckoutPage() {
               Order Summary
             </h2>
             <div className="mt-6 space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm">
-                  <span className="text-charcoal">
-                    {item.name} × {item.quantity}
-                  </span>
-                  <span className="text-terracotta">
-                    €{(item.price * item.quantity).toFixed(2)}
-                  </span>
-                </div>
-              ))}
+              {items.map((item) => {
+                const unitPrice = item.basePrice + item.customizations.reduce((s, c) => s + c.priceModifier, 0);
+                return (
+                    <div key={item.lineId} className="flex justify-between text-sm">
+                    <span className="text-charcoal">
+                        {item.name} × {item.quantity}
+                    </span>
+                    <span className="text-terracotta">
+                        €{(unitPrice * item.quantity).toFixed(2)}
+                    </span>
+                    </div>
+                );
+              })}
             </div>
             <div className="mt-6 flex justify-between border-t border-border pt-6 text-lg">
               <span className="text-charcoal">Total</span>

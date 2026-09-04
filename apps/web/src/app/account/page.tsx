@@ -9,6 +9,7 @@ type OrderItem = {
   quantity: number;
   unitPrice: string;
   dish: { name: string };
+  customizations?: { name: string; priceModifier: string }[];
 };
 
 type Order = {
@@ -84,12 +85,30 @@ export default function AccountOverviewPage() {
               </p>
             </div>
             <div className="mt-3 space-y-1">
-              {activeOrder.items.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm text-stone">
-                  <span>{item.dish.name}</span>
-                  <span>€{(parseFloat(item.unitPrice) * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
+              {activeOrder.items.map((item) => {
+                const modifiers = (item.customizations ?? []).reduce(
+                  (sum, c) => sum + parseFloat(c.priceModifier),
+                  0
+                );
+                const itemTotal = (parseFloat(item.unitPrice) + modifiers) * item.quantity;
+                return (
+                  <div key={item.id} className="flex justify-between text-sm text-stone">
+                    <span>
+                      {item.dish.name}
+                      {item.customizations && item.customizations.length > 0 && (
+                        <span className="text-xs italic">
+                          {" "}({item.customizations.map((c) => c.name).join(", ")})
+                        </span>
+                      )}
+                    </span>
+                    <span>€{itemTotal.toFixed(2)}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-3 flex justify-between border-t border-border pt-3 text-sm font-medium text-charcoal">
+              <span>Total</span>
+              <span>€{parseFloat(activeOrder.totalAmount).toFixed(2)}</span>
             </div>
             <Link
               href={`/order-confirmation?order=${activeOrder.id}`}

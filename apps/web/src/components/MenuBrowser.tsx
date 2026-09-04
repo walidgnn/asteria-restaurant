@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Plus, Search } from "lucide-react";
-import type { MenuCategory } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
-
+import type { MenuCategory } from "@/lib/api";
 
 const TAGLINES: Record<string, string> = {
   "Small Plates": "TO START",
@@ -81,9 +81,11 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
                 className="border-b border-border py-6 first:pt-0"
               >
                 <div className="flex items-baseline justify-between gap-4">
-                  <h3 className="font-serif text-2xl text-charcoal">
-                    {dish.name}
-                  </h3>
+                  <Link href={`/menu/${dish.id}`}>
+                    <h3 className="font-serif text-2xl text-charcoal hover:text-terracotta">
+                      {dish.name}
+                    </h3>
+                  </Link>
                   <span className="whitespace-nowrap text-terracotta">
                     €{dish.price}
                   </span>
@@ -94,17 +96,17 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
                   </p>
                 )}
                 <button
-                    onClick={() =>
-                        addItem({
-                        id: dish.id,
-                        name: dish.name,
-                        price: parseFloat(dish.price),
-                        })
-                    }
-                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-charcoal transition-colors hover:text-terracotta"
-                    >
-                    <Plus size={12} strokeWidth={2} />
-                    ADD
+                  onClick={() =>
+                    addItem({
+                      dishId: dish.id,
+                      name: dish.name,
+                      basePrice: parseFloat(dish.price),
+                    })
+                  }
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-charcoal transition-colors hover:text-terracotta"
+                >
+                  <Plus size={12} strokeWidth={2} />
+                  ADD
                 </button>
               </div>
             ))}
@@ -117,7 +119,7 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
                 src="/images/chef-plating.jpg"
                 alt="Chef plating a dish in the Asteria kitchen"
                 fill
-                className="object-cover"
+                className="object-cover object-top"
               />
             </div>
           )}

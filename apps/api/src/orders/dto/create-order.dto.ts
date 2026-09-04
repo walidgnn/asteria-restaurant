@@ -8,6 +8,11 @@ class OrderItemInput {
   @IsInt()
   @Min(1)
   quantity: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  optionIds?: string[];
 }
 
 export class CreateOrderDto {

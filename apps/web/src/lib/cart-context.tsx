@@ -8,52 +8,54 @@ import {
   ReactNode,
 } from "react";
 
-export type CartItem = {
-  id: string;
+export type SelectedCustomization = {
+  optionId: string;
   name: string;
-  price: number;
-  quantity: number;
+  priceModifier: number;
 };
 
-export type OrderDetails = {
-  orderId: string;
-  items: CartItem[];
-  subtotal: number;
-  customerName: string;
-  email: string;
-  orderType: "pickup" | "delivery";
+export type CartItem = {
+  lineId: string; // unique per dish+customization combo
+  dishId: string;
+  name: string;
+  basePrice: number;
+  customizations: SelectedCustomization[];
+  quantity: number;
 };
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (item: { id: string; name: string; price: number }) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  addItem: (item: {
+    dishId: string;
+    name: string;
+    basePrice: number;
+    customizations?: SelectedCustomization[];
+    quantity?: number;
+  }) => void;
+  removeItem: (lineId: string) => void;
+  updateQuantity: (lineId: string, quantity: number) => void;
   itemCount: number;
   subtotal: number;
-  lastOrder: OrderDetails | null;
-  placeOrder: (details: {
-    customerName: string;
-    email: string;
-    orderType: "pickup" | "delivery";
-  }) => string;
+  clearCart: () => void;
   toastMessage: string | null;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
-
 const STORAGE_KEY = "asteria-cart";
 
-function generateOrderId() {
-  const num = Math.floor(1000 + Math.random() * 9000);
-  return `A${num}`;
+function makeLineId(dishId: string, customizations: SelectedCustomization[]) {
+  const optionIds = customizations.map((c) => c.optionId).sort().join(",");
+  return `${dishId}::${optionIds}`;
+}
+
+function lineTotal(item: CartItem) {
+  const modifiers = item.customizations.reduce((sum, c) => sum + c.priceModifier, 0);
+  return (item.basePrice + modifiers) * item.quantity;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const [lastOrder, setLastOrder] = useState<OrderDetails | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -71,58 +73,63 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items, hydrated]);
 
-    function addItem(item: { id: string; name: string; price: number }) {
+  function addItem(input: {
+    dishId: string;
+    name: string;
+    basePrice: number;
+    customizations?: SelectedCustomization[];
+    quantity?: number;
+  }) {
+    const customizations = input.customizations ?? [];
+    const quantity = input.quantity ?? 1;
+    const lineId = makeLineId(input.dishId, customizations);
+
     setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      const existing = prev.find((i) => i.lineId === lineId);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.lineId === lineId ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [
+        ...prev,
+        {
+          lineId,
+          dishId: input.dishId,
+          name: input.name,
+          basePrice: input.basePrice,
+          customizations,
+          quantity,
+        },
+      ];
     });
-    setToastMessage(`Added ${item.name} to your order`);
+
+    setToastMessage(`Added ${input.name} to your order`);
     setTimeout(() => setToastMessage(null), 2500);
   }
 
-  function removeItem(id: string) {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  function removeItem(lineId: string) {
+    setItems((prev) => prev.filter((i) => i.lineId !== lineId));
+  }
+
+  function updateQuantity(lineId: string, quantity: number) {
+    if (quantity <= 0) {
+      removeItem(lineId);
+      return;
+    }
+    setItems((prev) =>
+      prev.map((i) => (i.lineId === lineId ? { ...i, quantity } : i))
+    );
   }
 
   function clearCart() {
     setItems([]);
   }
 
-  function updateQuantity(id: string, quantity: number) {
-    if (quantity <= 0) {
-      removeItem(id);
-      return;
-    }
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity } : i))
-    );
-  }
-
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const subtotal = items.reduce((sum, i) => sum + lineTotal(i), 0);
 
-  function placeOrder(details: {
-    customerName: string;
-    email: string;
-    orderType: "pickup" | "delivery";
-  }) {
-    const orderId = generateOrderId();
-    setLastOrder({
-      orderId,
-      items,
-      subtotal,
-      ...details,
-    });
-    setItems([]);
-    return orderId;
-  }
-
-    return (
+  return (
     <CartContext.Provider
       value={{
         items,
@@ -131,10 +138,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         itemCount,
         subtotal,
-        lastOrder,
-        placeOrder,
-        toastMessage,
         clearCart,
+        toastMessage,
       }}
     >
       {children}
