@@ -54,11 +54,11 @@ export function SignatureDishes({ dishes }: { dishes: Dish[] }) {
             <button
               onClick={() =>
                 addItem({
-                  id: dish.id,
-                  name: dish.name,
-                  price: parseFloat(dish.price),
+                    dishId: dish.id,
+                    name: dish.name,
+                    basePrice: parseFloat(dish.price),
                 })
-              }
+                }
               className="mt-5 inline-flex items-center gap-2 border border-border px-5 py-2.5 text-xs font-medium tracking-wide text-charcoal transition-colors hover:border-charcoal"
             >
               <Plus size={14} strokeWidth={2} />
