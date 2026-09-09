@@ -385,6 +385,7 @@ model Reservation {
   reservationDate DateTime
   status          ReservationStatus @default(PENDING)
   notes           String?
+  staffNotes      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
