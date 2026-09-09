@@ -7,9 +7,10 @@ import { AuthModule } from "./auth/auth.module";
 import { OrdersModule } from "./orders/orders.module";
 import { ReservationsModule } from "./reservations/reservations.module";
 import { PaymentsModule } from "./payments/payments.module";
+import { AdminAuthModule } from "./admin-auth/admin-auth.module";
 
 @Module({
-  imports: [PrismaModule, MenuModule, AuthModule, OrdersModule, ReservationsModule, PaymentsModule],
+    imports: [PrismaModule, MenuModule, AuthModule, OrdersModule, ReservationsModule, PaymentsModule, AdminAuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

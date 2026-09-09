@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcrypt";
+
 const prisma = new PrismaClient();
 
 type DishSeed = { name: string; price: number; description?: string };
@@ -252,6 +254,81 @@ async function main() {
   }
 
   console.log("Customizations linked.");
+
+  
+  
+  console.log("Seeding roles, permissions, and staff...");
+
+  const AREAS = ["dashboard", "orders", "reservations", "menu", "tables", "customers", "restaurant", "staff"];
+
+  const permissionMap = new Map<string, string>();
+  for (const area of AREAS) {
+    const viewPerm = await prisma.permission.upsert({
+      where: { name: `${area}.view` },
+      update: {},
+      create: { name: `${area}.view`, description: `View ${area}` },
+    });
+    permissionMap.set(`${area}.view`, viewPerm.id);
+
+    if (area !== "dashboard" && area !== "staff") {
+      const managePerm = await prisma.permission.upsert({
+        where: { name: `${area}.manage` },
+        update: {},
+        create: { name: `${area}.manage`, description: `Manage ${area}` },
+      });
+      permissionMap.set(`${area}.manage`, managePerm.id);
+    }
+  }
+
+  async function ensureRole(name: string, permissionNames: string[]) {
+    const role = await prisma.role.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+    for (const permName of permissionNames) {
+      const permId = permissionMap.get(permName);
+      if (!permId) continue;
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: role.id, permissionId: permId } },
+        update: {},
+        create: { roleId: role.id, permissionId: permId },
+      });
+    }
+    return role;
+  }
+
+  const managerRole = await ensureRole(
+    "Manager",
+    [...permissionMap.keys()].filter((k) => k !== "staff.manage") // Manager can view staff, not manage
+  );
+  const staffRole = await ensureRole("Staff", [
+    "dashboard.view", "orders.view", "orders.manage", "reservations.view", "reservations.manage",
+  ]);
+  const kitchenRole = await ensureRole("Kitchen", ["orders.view", "orders.manage"]);
+
+  async function ensureStaffUser(
+    email: string,
+    firstName: string,
+    lastName: string,
+    roleId: string
+  ) {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) return existing;
+    const hashed = await bcrypt.hash("password123", 10);
+    const user = await prisma.user.create({
+      data: { email, firstName, lastName, password: hashed },
+    });
+    await prisma.userRole.create({ data: { userId: user.id, roleId } });
+    console.log(`  ✓ ${firstName} ${lastName} (${email}) — password: password123`);
+    return user;
+  }
+
+  await ensureStaffUser("alex@asteria.com", "Alex", "Morgan", managerRole.id);
+  await ensureStaffUser("emily@asteria.com", "Emily", "Carter", staffRole.id);
+  await ensureStaffUser("david@asteria.com", "David", "Ross", kitchenRole.id);
+
+  console.log("Staff seeding complete.");
 
   console.log("Seed complete.");
 }
