@@ -18,11 +18,11 @@ type OrderItem = {
 type Order = {
   id: string;
   orderNumber: number;
+  status: string;
   orderType: string;
   totalAmount: string;
   items: OrderItem[];
 };
-
 export default function OrderConfirmationPage() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order");
@@ -35,12 +35,19 @@ export default function OrderConfirmationPage() {
       setLoading(false);
       return;
     }
-    fetch(`http://localhost:3001/orders/${orderId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then(setOrder)
-      .finally(() => setLoading(false));
+
+    function fetchOrder() {
+      fetch(`http://localhost:3001/orders/${orderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then(setOrder)
+        .finally(() => setLoading(false));
+    }
+
+    fetchOrder();
+    const interval = setInterval(fetchOrder, 10000);
+    return () => clearInterval(interval);
   }, [orderId, token]);
 
   if (loading) {
@@ -96,33 +103,50 @@ export default function OrderConfirmationPage() {
               Order Status
             </h2>
             <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-olive text-white">
-                  <Check size={16} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-charcoal">
-                    Order Received
-                  </p>
-                  <p className="text-xs text-stone">Confirmed</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 opacity-50">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-charcoal text-charcoal">
-                  <UtensilsCrossed size={16} />
-                </div>
-                <p className="text-sm font-medium text-charcoal">
-                  Being Prepared
-                </p>
-              </div>
-              <div className="flex items-center gap-4 opacity-40">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-stone text-stone">
-                  <ShoppingBag size={16} />
-                </div>
-                <p className="text-sm font-medium text-charcoal">
-                  Ready for Pickup
-                </p>
-              </div>
+              {[
+                { key: "PENDING", label: "Order Received", icon: Check },
+                { key: "CONFIRMED", label: "Order Confirmed", icon: Check },
+                { key: "PREPARING", label: "Being Prepared", icon: UtensilsCrossed },
+                { key: "READY", label: "Ready for Pickup", icon: ShoppingBag },
+                { key: "COMPLETED", label: "Completed", icon: Check },
+              ]
+                .filter((step, i, arr) => {
+                  // Always show PENDING and CONFIRMED as the base, plus up through current status
+                  const order_ = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED"];
+                  const currentIndex = order_.indexOf(order.status);
+                  return i <= Math.max(currentIndex, 1);
+                })
+                .map((step, i, arr) => {
+                  const order_ = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED"];
+                  const currentIndex = order_.indexOf(order.status);
+                  const stepIndex = order_.indexOf(step.key);
+                  const isDone = stepIndex < currentIndex;
+                  const isCurrent = stepIndex === currentIndex;
+                  const Icon = step.icon;
+
+                  return (
+                    <div
+                      key={step.key}
+                      className={`flex items-center gap-4 ${!isDone && !isCurrent ? "opacity-50" : ""}`}
+                    >
+                      <div
+                        className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                          isDone || isCurrent
+                            ? "bg-olive text-white"
+                            : "border border-charcoal text-charcoal"
+                        }`}
+                      >
+                        <Icon size={16} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-charcoal">{step.label}</p>
+                        {isCurrent && step.key !== "COMPLETED" && (
+                          <p className="text-xs text-stone">In progress</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-6 border-t border-border pt-6 text-left">
