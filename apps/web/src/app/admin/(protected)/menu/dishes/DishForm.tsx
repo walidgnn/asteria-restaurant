@@ -45,7 +45,11 @@ export function DishForm({ initial }: { initial?: Partial<DishData> & { id: stri
       .then(setCategories);
     fetch("http://localhost:3001/admin/menu/customizations", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
-      .then((data) => setGroups(data.map((g: any) => ({ id: g.id, name: g.name }))));
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setGroups(data.map((g: any) => ({ id: g.id, name: g.name })));
+        }
+      });
   }, [token]);
 
   function toggleGroup(id: string) {
