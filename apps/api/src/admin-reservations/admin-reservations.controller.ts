@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards, Post } from "@nestjs/common";
 import { AdminJwtAuthGuard } from "../admin-auth/admin-jwt-auth.guard";
 import { PermissionsGuard } from "../admin-auth/permissions.guard";
 import { RequirePermissions } from "../admin-auth/permissions.decorator";
@@ -59,5 +59,11 @@ export class AdminReservationsController {
   @Patch(":id/table")
   changeTable(@Param("id") id: string, @Body() body: { tableId: string }) {
     return this.reservationsService.changeTable(id, body.tableId);
+  }
+
+  @RequirePermissions("reservations.manage")
+  @Post("manual")
+  createManual(@Body() dto: any) {
+    return this.reservationsService.createManual(dto);
   }
 }

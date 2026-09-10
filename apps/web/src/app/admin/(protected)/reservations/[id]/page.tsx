@@ -270,10 +270,18 @@ export default function AdminReservationDetailPage() {
 
           {canManage && !isFinal && (
             <div className="space-y-1 border-t border-border pt-4">
-              <button onClick={handleNoShow} disabled={busy} className="block text-sm font-medium tracking-wide text-charcoal">
+              <button
+                onClick={handleNoShow}
+                disabled={busy}
+                className="block w-full border border-border px-6 py-3 text-sm font-medium tracking-wide text-charcoal transition-colors hover:border-charcoal disabled:opacity-60"
+              >
                 MARK AS NO-SHOW
               </button>
-              <button onClick={handleCancel} disabled={busy} className="block text-sm font-medium tracking-wide text-terracotta">
+              <button
+                onClick={handleCancel}
+                disabled={busy}
+                className="block w-full border border-terracotta px-6 py-3 text-sm font-medium tracking-wide text-terracotta transition-colors hover:bg-terracotta hover:text-white disabled:opacity-60"
+              >
                 CANCEL RESERVATION
               </button>
             </div>

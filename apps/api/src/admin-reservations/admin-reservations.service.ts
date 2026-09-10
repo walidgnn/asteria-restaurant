@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 
 const STATUS_FLOW: Record<string, string> = {
   PENDING: "CONFIRMED",
@@ -23,10 +25,23 @@ export class AdminReservationsService {
     };
     if (filters.status) where.status = filters.status;
     if (filters.search) {
+      const term = filters.search.trim();
+      const words = term.split(/\s+/);
+
       where.customer = {
         OR: [
-          { firstName: { contains: filters.search, mode: "insensitive" } },
-          { lastName: { contains: filters.search, mode: "insensitive" } },
+          { firstName: { contains: term, mode: "insensitive" } },
+          { lastName: { contains: term, mode: "insensitive" } },
+          ...(words.length > 1
+            ? [
+                {
+                  AND: [
+                    { firstName: { contains: words[0], mode: "insensitive" } },
+                    { lastName: { contains: words.slice(1).join(" "), mode: "insensitive" } },
+                  ],
+                },
+              ]
+            : []),
         ],
       };
     }
@@ -146,6 +161,61 @@ export class AdminReservationsService {
     return this.prisma.diningTable.findMany({
       where: { capacity: { gte: reservation.partySize }, id: { notIn: [...bookedIds].filter(Boolean) as string[] } },
       orderBy: { capacity: "asc" },
+    });
+  }
+
+    async createManual(dto: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    date: string;
+    time: string;
+    partySize: number;
+    notes?: string;
+  }) {
+    let customer = await this.prisma.customer.findUnique({ where: { email: dto.email } });
+    if (!customer) {
+      customer = await this.prisma.customer.create({
+        data: {
+          email: dto.email,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          phone: dto.phone,
+          password: await bcrypt.hash(crypto.randomUUID(), 10), // no login access; placeholder
+        },
+      });
+    }
+
+    const [hours, minutes] = dto.time.split(":").map(Number);
+    const reservationDate = new Date(dto.date);
+    reservationDate.setHours(hours, minutes, 0, 0);
+
+    const candidateTables = await this.prisma.diningTable.findMany({
+      where: { capacity: { gte: dto.partySize } },
+      orderBy: { capacity: "asc" },
+    });
+    const conflicting = await this.prisma.reservation.findMany({
+      where: {
+        reservationDate,
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        tableId: { in: candidateTables.map((t) => t.id) },
+      },
+      select: { tableId: true },
+    });
+    const bookedIds = new Set(conflicting.map((r) => r.tableId));
+    const availableTable = candidateTables.find((t) => !bookedIds.has(t.id));
+
+    return this.prisma.reservation.create({
+      data: {
+        customer: { connect: { id: customer.id } },
+        table: availableTable ? { connect: { id: availableTable.id } } : undefined,
+        partySize: dto.partySize,
+        reservationDate,
+        notes: dto.notes,
+        status: "CONFIRMED",
+        statusHistory: { create: { status: "CONFIRMED", note: "Created manually by staff." } },
+      },
     });
   }
 }

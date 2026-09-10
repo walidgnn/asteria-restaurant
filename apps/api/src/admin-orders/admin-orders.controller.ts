@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Patch, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { AdminJwtAuthGuard } from "../admin-auth/admin-jwt-auth.guard";
 import { PermissionsGuard } from "../admin-auth/permissions.guard";
 import { RequirePermissions } from "../admin-auth/permissions.decorator";
 import { AdminOrdersService } from "./admin-orders.service";
+import { CreateManualOrderDto } from "./dto/create-manual-order.dto";
 
 @UseGuards(AdminJwtAuthGuard, PermissionsGuard)
 @Controller("admin/orders")
@@ -41,5 +42,11 @@ export class AdminOrdersController {
   @Patch(":id/cancel")
   cancel(@Req() req: any, @Param("id") id: string) {
     return this.ordersService.cancelOrder(id, `${req.user.firstName} ${req.user.lastName}`);
+  }
+
+  @RequirePermissions("orders.manage")
+  @Post("manual")
+  createManual(@Body() dto: CreateManualOrderDto) {
+    return this.ordersService.createManual(dto);
   }
 }

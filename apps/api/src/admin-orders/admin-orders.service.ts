@@ -1,5 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
+import { CreateManualOrderDto } from "./dto/create-manual-order.dto";
 
 const STATUS_FLOW: Record<string, string> = {
   PENDING: "CONFIRMED",
@@ -109,6 +112,45 @@ export class AdminOrdersService {
           create: { status: "CANCELLED", note: `Cancelled by ${staffName}.` },
         },
       },
+    });
+  }
+    async createManual(dto: CreateManualOrderDto) {
+    let customer = await this.prisma.customer.findUnique({ where: { email: dto.email } });
+    if (!customer) {
+      customer = await this.prisma.customer.create({
+        data: {
+          email: dto.email,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          phone: dto.phone,
+          password: await bcrypt.hash(crypto.randomUUID(), 10),
+        },
+      });
+    }
+
+    const dishIds = [...new Set(dto.items.map((i) => i.dishId))];
+    const dishes = await this.prisma.dish.findMany({ where: { id: { in: dishIds } } });
+    const dishMap = new Map(dishes.map((d) => [d.id, d]));
+
+    let totalAmount = 0;
+    const itemsData = dto.items.map((item) => {
+      const dish = dishMap.get(item.dishId)!;
+      const unitPrice = Number(dish.price);
+      totalAmount += unitPrice * item.quantity;
+      return { dishId: item.dishId, quantity: item.quantity, unitPrice };
+    });
+
+    return this.prisma.order.create({
+      data: {
+        customer: { connect: { id: customer.id } },
+        orderType: dto.orderType,
+        notes: dto.notes,
+        totalAmount,
+        status: "CONFIRMED",
+        items: { create: itemsData },
+        statusHistory: { create: { status: "CONFIRMED", note: "Created manually by staff." } },
+      },
+      include: { items: { include: { dish: true } } },
     });
   }
 }
