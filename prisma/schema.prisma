@@ -190,6 +190,7 @@ model Dish {
   description String?
   price       Decimal  @db.Decimal(10, 2)
   isAvailable Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -218,9 +219,11 @@ model DishImage {
 
 model CustomizationGroup {
   id       String @id @default(cuid())
-  name     String // e.g. "Spice Level", "Extras"
-  isRequired Boolean @default(false) // must the customer pick one?
-  allowMultiple Boolean @default(false) // can they pick more than one option?
+  name     String
+  isRequired Boolean @default(false)
+  allowMultiple Boolean @default(false)
+  maxSelections Int?
+  isActive Boolean @default(true)
 
   options CustomizationOption[]
   dishes  DishCustomizationGroup[]
@@ -233,8 +236,9 @@ model CustomizationOption {
   groupId String
   group   CustomizationGroup @relation(fields: [groupId], references: [id])
 
-  name         String  // e.g. "Mild", "Extra Cheese"
-  priceModifier Decimal @db.Decimal(10, 2) @default(0) // e.g. +1.50, or 0 for free options
+  name         String
+  priceModifier Decimal @db.Decimal(10, 2) @default(0)
+  isAvailable  Boolean @default(true)
   sortOrder    Int     @default(0)
 
   orderItemCustomizations OrderItemCustomization[]
