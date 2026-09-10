@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Star } from "lucide-react";
+import { Search, Star, MoreVertical } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 
 type Category = { id: string; name: string };
@@ -27,6 +27,7 @@ export default function AdminDishesPage() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [featuredFilter, setFeaturedFilter] = useState("");
+  const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
   const canManage = hasPermission("menu.manage");
 
   async function load() {
@@ -58,6 +59,20 @@ export default function AdminDishesPage() {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ [field]: !dish[field] }),
     });
+    await load();
+  }
+
+  async function handleDelete(dish: Dish) {
+    if (!confirm(`Delete "${dish.name}"? This cannot be undone.`)) return;
+    const res = await fetch(`http://localhost:3001/admin/menu/dishes/${dish.id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => null);
+      alert(err?.message || "Failed to delete dish.");
+    }
+    setMenuOpenFor(null);
     await load();
   }
 
@@ -158,10 +173,27 @@ export default function AdminDishesPage() {
                 <td className="px-4 py-4 text-stone">
                   {dish.customizationGroups.length} option{dish.customizationGroups.length !== 1 ? "s" : ""}
                 </td>
-                <td className="px-4 py-4">
-                  <Link href={`/admin/menu/dishes/${dish.id}`} className="text-xs font-medium tracking-wide text-charcoal">
-                    EDIT →
-                  </Link>
+                <td className="relative px-4 py-4">
+                  <div className="flex items-center gap-3">
+                    <Link href={`/admin/menu/dishes/${dish.id}`} className="text-xs font-medium tracking-wide text-charcoal">
+                      EDIT →
+                    </Link>
+                    {canManage && (
+                      <button onClick={() => setMenuOpenFor(menuOpenFor === dish.id ? null : dish.id)}>
+                        <MoreVertical size={16} className="text-charcoal" />
+                      </button>
+                    )}
+                  </div>
+                  {menuOpenFor === dish.id && (
+                    <div className="absolute right-4 top-12 z-10 w-32 border border-border bg-cream shadow-md">
+                      <button
+                        onClick={() => handleDelete(dish)}
+                        className="block w-full px-4 py-2.5 text-left text-sm text-terracotta hover:bg-mist"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
