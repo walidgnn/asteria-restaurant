@@ -16,6 +16,8 @@ model Customer {
   firstName String
   lastName  String
   phone     String?
+  isVip     Boolean  @default(false)
+  staffNotes String?
   marketingOptIn        Boolean  @default(false)
   reservationReminders  Boolean  @default(true)
   deletedAt DateTime?

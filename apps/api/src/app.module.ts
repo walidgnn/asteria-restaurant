@@ -13,9 +13,10 @@ import { AdminOrdersModule } from "./admin-orders/admin-orders.module";
 import { AdminReservationsModule } from "./admin-reservations/admin-reservations.module";
 import { AdminMenuModule } from "./admin-menu/admin-menu.module";
 import { AdminTablesModule } from "./admin-tables/admin-tables.module";
+import { AdminCustomersModule } from "./admin-customers/admin-customers.module";
 
 @Module({
-      imports: [PrismaModule, MenuModule, AuthModule, OrdersModule, ReservationsModule, PaymentsModule, AdminAuthModule, AdminDashboardModule, AdminOrdersModule, AdminReservationsModule, AdminMenuModule, AdminTablesModule],
+      imports: [PrismaModule, MenuModule, AuthModule, OrdersModule, ReservationsModule, PaymentsModule, AdminAuthModule, AdminDashboardModule, AdminOrdersModule, AdminReservationsModule, AdminMenuModule, AdminTablesModule, AdminCustomersModule],
   controllers: [AppController],
   providers: [AppService],
 })
