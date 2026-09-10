@@ -341,9 +341,13 @@ enum TableStatus {
 
 model DiningTable {
   id       String @id @default(cuid())
-  number   String // e.g. "T1", "Patio 3"
+  number   String
   capacity Int
   status   TableStatus @default(AVAILABLE)
+
+  currentPartySize   Int?
+  seatedAt           DateTime?
+  unavailableReason  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
