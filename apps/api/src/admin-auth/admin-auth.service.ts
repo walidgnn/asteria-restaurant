@@ -36,6 +36,7 @@ export class AdminAuthService {
       }
     }
 
+        await this.prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
     const token = this.jwt.sign(
       { sub: user.id, email: user.email },
       { secret: process.env.ADMIN_JWT_SECRET, expiresIn: "12h" }
