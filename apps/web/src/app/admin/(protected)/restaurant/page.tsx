@@ -48,28 +48,6 @@ export default function RestaurantInfoPage() {
 
   if (!data) return <p className="text-stone">Loading...</p>;
 
-  const Field = ({ label, field, textarea }: { label: string; field: string; textarea?: boolean }) => (
-    <div>
-      <label className="text-xs font-medium tracking-wide text-stone">{label.toUpperCase()}</label>
-      {textarea ? (
-        <textarea
-          value={data[field] ?? ""}
-          onChange={(e) => update(field, e.target.value)}
-          disabled={!canManage}
-          rows={3}
-          className="mt-2 w-full border border-border bg-transparent px-3 py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none"
-        />
-      ) : (
-        <input
-          value={data[field] ?? ""}
-          onChange={(e) => update(field, e.target.value)}
-          disabled={!canManage}
-          className="mt-2 w-full border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none"
-        />
-      )}
-    </div>
-  );
-
   return (
     <div>
       <div className="flex items-start justify-between">
@@ -105,26 +83,34 @@ export default function RestaurantInfoPage() {
             <p className="text-xs font-medium tracking-wide text-terracotta">PROFILE</p>
             <h2 className="mt-1 font-serif text-2xl text-charcoal">Core Identity</h2>
             <div className="mt-4 grid grid-cols-2 gap-5">
-              <Field label="Restaurant Name" field="name" />
-              <Field label="Tagline" field="tagline" />
+              <Field label="Restaurant Name" field="name" data={data} onChange={update} canManage={canManage} />
+              <Field label="Tagline" field="tagline" data={data} onChange={update} canManage={canManage} />
             </div>
-            <div className="mt-5"><Field label="Cuisine" field="cuisine" /></div>
-            <div className="mt-5"><Field label="Short Description" field="description" textarea /></div>
+            <div className="mt-5">
+              <Field label="Cuisine" field="cuisine" data={data} onChange={update} canManage={canManage} />
+            </div>
+            <div className="mt-5">
+              <Field label="Short Description" field="description" textarea data={data} onChange={update} canManage={canManage} />
+            </div>
           </div>
 
           <div className="border border-border px-6 py-6">
             <p className="text-xs font-medium tracking-wide text-terracotta">VENUE</p>
             <h2 className="mt-1 font-serif text-2xl text-charcoal">Location</h2>
-            <div className="mt-4"><Field label="Street Address" field="address" /></div>
-            <div className="mt-5 grid grid-cols-2 gap-5">
-              <Field label="City" field="city" />
-              <Field label="State / Province" field="state" />
+            <div className="mt-4">
+              <Field label="Street Address" field="address" data={data} onChange={update} canManage={canManage} />
             </div>
             <div className="mt-5 grid grid-cols-2 gap-5">
-              <Field label="Postal Code" field="postalCode" />
-              <Field label="Country" field="country" />
+              <Field label="City" field="city" data={data} onChange={update} canManage={canManage} />
+              <Field label="State / Province" field="state" data={data} onChange={update} canManage={canManage} />
             </div>
-            <div className="mt-5"><Field label="Location Notes (Internal)" field="locationNotes" /></div>
+            <div className="mt-5 grid grid-cols-2 gap-5">
+              <Field label="Postal Code" field="postalCode" data={data} onChange={update} canManage={canManage} />
+              <Field label="Country" field="country" data={data} onChange={update} canManage={canManage} />
+            </div>
+            <div className="mt-5">
+              <Field label="Location Notes (Internal)" field="locationNotes" data={data} onChange={update} canManage={canManage} />
+            </div>
           </div>
 
           <div className="border border-border px-6 py-6">
@@ -132,10 +118,10 @@ export default function RestaurantInfoPage() {
             <h2 className="mt-1 font-serif text-2xl text-charcoal">Brand Story</h2>
             <div className="mt-4 grid grid-cols-2 gap-6">
               <div className="space-y-5">
-                <Field label="Hero Tagline" field="heroTagline" />
-                <Field label="Our Story Title" field="storyTitle" />
+                <Field label="Hero Tagline" field="heroTagline" data={data} onChange={update} canManage={canManage} />
+                <Field label="Our Story Title" field="storyTitle" data={data} onChange={update} canManage={canManage} />
               </div>
-              <Field label="Our Story (Full Text)" field="storyText" textarea />
+              <Field label="Our Story (Full Text)" field="storyText" textarea data={data} onChange={update} canManage={canManage} />
             </div>
           </div>
         </div>
@@ -145,9 +131,9 @@ export default function RestaurantInfoPage() {
             <p className="text-xs font-medium tracking-wide text-terracotta">CONTACT</p>
             <h2 className="mt-1 font-serif text-xl text-charcoal">Reach Us</h2>
             <div className="mt-4 space-y-4">
-              <Field label="Phone Number" field="phone" />
-              <Field label="Email Address" field="email" />
-              <Field label="Website" field="website" />
+              <Field label="Phone Number" field="phone" data={data} onChange={update} canManage={canManage} />
+              <Field label="Email Address" field="email" data={data} onChange={update} canManage={canManage} />
+              <Field label="Website" field="website" data={data} onChange={update} canManage={canManage} />
             </div>
           </div>
 
@@ -155,9 +141,9 @@ export default function RestaurantInfoPage() {
             <p className="text-xs font-medium tracking-wide text-terracotta">DIGITAL</p>
             <h2 className="mt-1 font-serif text-xl text-charcoal">Social Links</h2>
             <div className="mt-4 space-y-4">
-              <Field label="Instagram" field="instagramUrl" />
-              <Field label="Facebook" field="facebookUrl" />
-              <Field label="Pinterest" field="pinterestUrl" />
+              <Field label="Instagram" field="instagramUrl" data={data} onChange={update} canManage={canManage} />
+              <Field label="Facebook" field="facebookUrl" data={data} onChange={update} canManage={canManage} />
+              <Field label="Pinterest" field="pinterestUrl" data={data} onChange={update} canManage={canManage} />
             </div>
           </div>
 
@@ -189,6 +175,44 @@ export default function RestaurantInfoPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  field,
+  textarea,
+  data,
+  onChange,
+  canManage,
+}: {
+  label: string;
+  field: string;
+  textarea?: boolean;
+  data: any;
+  onChange: (field: string, value: string) => void;
+  canManage: boolean;
+}) {
+  return (
+    <div>
+      <label className="text-xs font-medium tracking-wide text-stone">{label.toUpperCase()}</label>
+      {textarea ? (
+        <textarea
+          value={data[field] ?? ""}
+          onChange={(e) => onChange(field, e.target.value)}
+          disabled={!canManage}
+          rows={3}
+          className="mt-2 w-full border border-border bg-transparent px-3 py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none"
+        />
+      ) : (
+        <input
+          value={data[field] ?? ""}
+          onChange={(e) => onChange(field, e.target.value)}
+          disabled={!canManage}
+          className="mt-2 w-full border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none"
+        />
+      )}
     </div>
   );
 }

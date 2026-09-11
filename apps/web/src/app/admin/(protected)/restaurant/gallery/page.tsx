@@ -9,6 +9,17 @@ type GalleryImage = { id: string; title: string | null; url: string; section: st
 
 const SECTIONS = ["all", "homepage", "menu", "our-story", "gallery", "restaurant"];
 
+function isValidImageUrl(url: string): boolean {
+  if (!url) return false;
+  if (url.startsWith("/")) return true;
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function GalleryPage() {
   const { token, hasPermission } = useAdminAuth();
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -123,8 +134,14 @@ export default function GalleryPage() {
       <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {filtered.map((img) => (
           <div key={img.id} className={`relative border border-border ${!img.isActive ? "opacity-50" : ""}`}>
-            <div className="relative aspect-square w-full">
-              <Image src={img.url} alt={img.title ?? ""} fill className="object-cover" />
+            <div className="relative aspect-square w-full bg-mist">
+              {isValidImageUrl(img.url) ? (
+                <Image src={img.url} alt={img.title ?? ""} fill className="object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-xs text-stone">
+                  Invalid image URL
+                </div>
+              )}
               {canManage && (
                 <button
                   onClick={() => setMenuOpenFor(menuOpenFor === img.id ? null : img.id)}
