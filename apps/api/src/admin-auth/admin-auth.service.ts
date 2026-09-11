@@ -54,4 +54,24 @@ export class AdminAuthService {
       },
     };
   }
+
+    async updateProfile(userId: string, dto: { firstName?: string; lastName?: string }) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: dto,
+      select: { id: true, email: true, firstName: true, lastName: true },
+    });
+  }
+
+  async changePassword(userId: string, dto: { currentPassword: string; newPassword: string }) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException();
+
+    const valid = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!valid) throw new UnauthorizedException("Current password is incorrect.");
+
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+    return { success: true };
+  }
 }
