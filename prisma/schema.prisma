@@ -118,16 +118,34 @@ model RolePermission {
 model Restaurant {
   id          String   @id @default(cuid())
   name        String
+  tagline     String?
+  cuisine     String?
   description String?
   address     String
   city        String
+  state       String?
+  postalCode  String?
+  country     String?
+  locationNotes String?
   phone       String
   email       String
+  website     String?
+  instagramUrl String?
+  facebookUrl  String?
+  pinterestUrl String?
+  reservationsEnabled Boolean @default(true)
+  orderingEnabled     Boolean @default(true)
+  pickupEnabled       Boolean @default(true)
+  deliveryEnabled     Boolean @default(false)
+  isOpen      Boolean  @default(true)
+  heroTagline String?
+  storyTitle  String?
+  storyText   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  openingHours OpeningHour[]
-  closures     RestaurantClosure[]
+  openingHours  OpeningHour[]
+  closures      RestaurantClosure[]
   galleryImages GalleryImage[]
 
   @@map("restaurants")
@@ -162,8 +180,11 @@ model GalleryImage {
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 
+  title     String?
   url       String
   altText   String?
+  section   String   @default("gallery")
+  isActive  Boolean  @default(true)
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 
