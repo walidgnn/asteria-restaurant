@@ -21,7 +21,7 @@ export default function NewOrderPage() {
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/menu")
+    fetch("http://192.168.100.10:3001/menu")
       .then((res) => res.json())
       .then(setCategories);
   }, []);
@@ -65,7 +65,7 @@ export default function NewOrderPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001/admin/orders/manual", {
+      const res = await fetch("http://192.168.100.10:3001/admin/orders/manual", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({

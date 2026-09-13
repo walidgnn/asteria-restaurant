@@ -27,7 +27,7 @@ export default function AdminCustomizationsPage() {
   async function load() {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
-    const res = await fetch(`http://localhost:3001/admin/menu/customizations?${params}`, {
+    const res = await fetch(`http://192.168.100.10:3001/admin/menu/customizations?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -50,7 +50,7 @@ export default function AdminCustomizationsPage() {
   async function handleCreateGroup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    await fetch("http://localhost:3001/admin/menu/customizations", {
+    await fetch("http://192.168.100.10:3001/admin/menu/customizations", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
@@ -66,7 +66,7 @@ export default function AdminCustomizationsPage() {
   async function handleAddOption(groupId: string, e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    await fetch(`http://localhost:3001/admin/menu/customizations/${groupId}/options`, {
+    await fetch(`http://192.168.100.10:3001/admin/menu/customizations/${groupId}/options`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
@@ -79,7 +79,7 @@ export default function AdminCustomizationsPage() {
   }
 
   async function toggleOptionAvailable(option: Option) {
-    await fetch(`http://localhost:3001/admin/menu/customizations/options/${option.id}`, {
+    await fetch(`http://192.168.100.10:3001/admin/menu/customizations/options/${option.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ isAvailable: !option.isAvailable }),
@@ -89,7 +89,7 @@ export default function AdminCustomizationsPage() {
 
   async function handleDeleteOption(option: Option) {
     if (!confirm(`Delete option "${option.name}"?`)) return;
-    const res = await fetch(`http://localhost:3001/admin/menu/customizations/options/${option.id}`, {
+    const res = await fetch(`http://192.168.100.10:3001/admin/menu/customizations/options/${option.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -102,7 +102,7 @@ export default function AdminCustomizationsPage() {
 
   async function handleDeleteGroup(group: Group) {
     if (!confirm(`Delete group "${group.name}"?`)) return;
-    const res = await fetch(`http://localhost:3001/admin/menu/customizations/${group.id}`, {
+    const res = await fetch(`http://192.168.100.10:3001/admin/menu/customizations/${group.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

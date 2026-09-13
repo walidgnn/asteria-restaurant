@@ -15,7 +15,7 @@ export default function StaffProfilePage() {
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
-    await fetch("http://localhost:3001/admin/auth/me", {
+    await fetch("http://192.168.100.10:3001/admin/auth/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ firstName, lastName }),
@@ -41,7 +41,7 @@ export default function StaffProfilePage() {
       return;
     }
 
-    const res = await fetch("http://localhost:3001/admin/auth/me/password", {
+    const res = await fetch("http://192.168.100.10:3001/admin/auth/me/password", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ currentPassword, newPassword }),

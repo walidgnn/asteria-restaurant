@@ -25,7 +25,7 @@ export default function AdminCategoriesPage() {
   async function load() {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
-    const res = await fetch(`http://localhost:3001/admin/menu/categories?${params}`, {
+    const res = await fetch(`http://192.168.100.10:3001/admin/menu/categories?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setCategories(await res.json());
@@ -43,7 +43,7 @@ export default function AdminCategoriesPage() {
     const name = form.get("name") as string;
     const description = form.get("description") as string;
 
-    const res = await fetch("http://localhost:3001/admin/menu/categories", {
+    const res = await fetch("http://192.168.100.10:3001/admin/menu/categories", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ name, description: description || undefined }),
@@ -58,7 +58,7 @@ export default function AdminCategoriesPage() {
   }
 
   async function toggleActive(cat: Category) {
-    await fetch(`http://localhost:3001/admin/menu/categories/${cat.id}`, {
+    await fetch(`http://192.168.100.10:3001/admin/menu/categories/${cat.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ isActive: !cat.isActive }),
@@ -68,7 +68,7 @@ export default function AdminCategoriesPage() {
 
   async function handleDelete(cat: Category) {
     if (!confirm(`Delete category "${cat.name}"?`)) return;
-    const res = await fetch(`http://localhost:3001/admin/menu/categories/${cat.id}`, {
+    const res = await fetch(`http://192.168.100.10:3001/admin/menu/categories/${cat.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

@@ -28,7 +28,7 @@ export default function NewReservationPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001/admin/reservations/manual", {
+      const res = await fetch("http://192.168.100.10:3001/admin/reservations/manual", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ firstName, lastName, email, phone, date, time, partySize, notes }),

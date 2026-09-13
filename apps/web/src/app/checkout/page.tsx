@@ -35,7 +35,7 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      const orderRes = await fetch("http://localhost:3001/orders", {
+      const orderRes = await fetch("http://192.168.100.10:3001/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function CheckoutPage() {
       const order = await orderRes.json();
       setOrderId(order.id);
 
-      const intentRes = await fetch("http://localhost:3001/payments/create-intent", {
+      const intentRes = await fetch("http://192.168.100.10:3001/payments/create-intent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -208,7 +208,17 @@ export default function CheckoutPage() {
               Your payment information is securely processed by Stripe.
             </p>
             <div className="mt-6">
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: {
+                    variables: {
+                      fontSizeBase: "16px",
+                    },
+                  },
+                }}
+              >
                 <PaymentForm orderId={orderId!} />
               </Elements>
             </div>

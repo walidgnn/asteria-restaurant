@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function fetchMe(authToken: string) {
     try {
-      const res = await fetch("http://localhost:3001/auth/me", {
+      const res = await fetch("http://192.168.100.10:3001/auth/me", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) throw new Error("Invalid session");
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:3001/auth/login", {
+    const res = await fetch("http://192.168.100.10:3001/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string;
     password: string;
   }) {
-    const res = await fetch("http://localhost:3001/auth/register", {
+    const res = await fetch("http://192.168.100.10:3001/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
