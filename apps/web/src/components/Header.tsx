@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { CartButton } from "@/components/CartButton";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 const NAV_LINKS = [
@@ -18,7 +19,14 @@ export function Header({ solid = false }: { solid?: boolean }) {
   const textColor = solid ? "text-charcoal" : "text-white";
   const subTextColor = solid ? "text-stone" : "text-white/90";
   const borderColor = solid ? "border-charcoal/70" : "border-white/70";
-  const { customer } = useAuth();
+  const { customer, logout } = useAuth();
+  const router = useRouter();
+
+  function handleLogout() {
+    logout();
+    setDrawerOpen(false);
+    router.push("/");
+  }
 
   return (
     <>
@@ -102,7 +110,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
               ))}
             </nav>
 
-            <div className="mt-8 border-t border-border pt-6">
+            <div className="mt-8 space-y-3 border-t border-border pt-6">
               <Link
                 href={customer ? "/account" : "/login"}
                 onClick={() => setDrawerOpen(false)}
@@ -111,6 +119,15 @@ export function Header({ solid = false }: { solid?: boolean }) {
                 <User size={18} strokeWidth={1.5} />
                 {customer ? "MY ACCOUNT" : "SIGN IN"}
               </Link>
+              {customer && (
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-3 rounded border border-border px-4 py-3 text-sm font-medium tracking-wide text-terracotta transition-colors active:bg-mist"
+                >
+                  <LogOut size={18} strokeWidth={1.5} />
+                  LOG OUT
+                </button>
+              )}
             </div>
 
             <Link
