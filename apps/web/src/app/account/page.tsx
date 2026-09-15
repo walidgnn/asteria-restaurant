@@ -35,13 +35,13 @@ export default function AccountOverviewPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://192.168.100.10:3001/orders", {
+    fetch("http://localhost:3001orders", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then(setOrders);
 
-    fetch("http://192.168.100.10:3001/reservations", {
+    fetch("http://localhost:3001reservations", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

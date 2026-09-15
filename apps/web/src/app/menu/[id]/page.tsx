@@ -42,7 +42,7 @@ export default function DishDetailsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`http://192.168.100.10:3001/menu/${params.id}`)
+    fetch(`http://localhost:3001menu/${params.id}`)
       .then((res) => res.json())
       .then(setDish);
   }, [params.id]);

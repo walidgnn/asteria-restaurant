@@ -31,7 +31,7 @@ export default function GalleryPage() {
   const canManage = hasPermission("restaurant.manage");
 
   async function load() {
-    const res = await fetch(`http://192.168.100.10:3001/admin/restaurant/gallery?section=${section}`, {
+    const res = await fetch(`http://localhost:3001admin/restaurant/gallery?section=${section}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setImages(await res.json());
@@ -49,7 +49,7 @@ export default function GalleryPage() {
   async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    await fetch("http://192.168.100.10:3001/admin/restaurant/gallery", {
+    await fetch("http://localhost:3001admin/restaurant/gallery", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
@@ -63,7 +63,7 @@ export default function GalleryPage() {
   }
 
   async function toggleActive(img: GalleryImage) {
-    await fetch(`http://192.168.100.10:3001/admin/restaurant/gallery/${img.id}`, {
+    await fetch(`http://localhost:3001admin/restaurant/gallery/${img.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ isActive: !img.isActive }),
@@ -73,7 +73,7 @@ export default function GalleryPage() {
 
   async function handleDelete(img: GalleryImage) {
     if (!confirm("Delete this image?")) return;
-    await fetch(`http://192.168.100.10:3001/admin/restaurant/gallery/${img.id}`, {
+    await fetch(`http://localhost:3001admin/restaurant/gallery/${img.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

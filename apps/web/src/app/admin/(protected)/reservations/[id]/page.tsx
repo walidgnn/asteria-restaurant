@@ -126,14 +126,24 @@ export default function AdminReservationDetailPage() {
             {reservation.status}
           </span>
         </div>
-        {canManage && canAdvance && (
-          <button
-            onClick={handleAdvance}
-            disabled={busy}
-            className="bg-olive px-6 py-3 text-sm font-medium tracking-wide text-white hover:bg-olive-dark disabled:opacity-60"
-          >
-            {NEXT_LABEL[reservation.status]} →
-          </button>
+        {canManage && !isFinal && (
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/admin/reservations/${reservation.id}/edit`}
+              className="border border-border px-6 py-3 text-sm font-medium tracking-wide text-charcoal transition-colors hover:border-charcoal"
+            >
+              MODIFY RESERVATION →
+            </Link>
+            {canAdvance && (
+              <button
+                onClick={handleAdvance}
+                disabled={busy}
+                className="bg-olive px-6 py-3 text-sm font-medium tracking-wide text-white hover:bg-olive-dark disabled:opacity-60"
+              >
+                {NEXT_LABEL[reservation.status]} →
+              </button>
+            )}
+          </div>
         )}
       </div>
       <p className="mt-2 text-sm text-stone">

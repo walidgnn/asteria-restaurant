@@ -34,7 +34,7 @@ export function PaymentForm({ orderId }: { orderId: string }) {
     }
 
     if (paymentIntent?.status === "succeeded") {
-      await fetch("http://192.168.100.10:3001/payments/confirm", {
+      await fetch("http://localhost:3001payments/confirm", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

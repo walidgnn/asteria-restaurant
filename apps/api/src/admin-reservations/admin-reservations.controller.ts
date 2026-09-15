@@ -66,4 +66,10 @@ export class AdminReservationsController {
   createManual(@Body() dto: any) {
     return this.reservationsService.createManual(dto);
   }
+
+  @RequirePermissions("reservations.manage")
+  @Patch(":id/details")
+  updateDetails(@Req() req: any, @Param("id") id: string, @Body() dto: any) {
+    return this.reservationsService.updateDetails(id, dto, `${req.user.firstName} ${req.user.lastName}`);
+  }
 }

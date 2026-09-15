@@ -13,7 +13,7 @@ export default function EditDishPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`http://192.168.100.10:3001/admin/menu/dishes/${params.id}`, {
+    fetch(`http://localhost:3001admin/menu/dishes/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

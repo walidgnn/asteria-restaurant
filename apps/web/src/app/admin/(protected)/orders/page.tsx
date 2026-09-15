@@ -43,7 +43,7 @@ export default function AdminOrdersPage() {
     if (search) params.set("search", search);
     params.set("page", String(page));
 
-    fetch(`http://192.168.100.10:3001/admin/orders?${params}`, {
+    fetch(`http://localhost:3001admin/orders?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

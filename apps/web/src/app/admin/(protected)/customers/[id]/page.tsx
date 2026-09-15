@@ -33,7 +33,7 @@ export default function CustomerDetailPage() {
   const canManage = hasPermission("customers.manage");
 
   async function load() {
-    const res = await fetch(`http://192.168.100.10:3001/admin/customers/${params.id}`, {
+    const res = await fetch(`http://localhost:3001admin/customers/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -47,7 +47,7 @@ export default function CustomerDetailPage() {
   }, [token, params.id]);
 
   async function saveNotes() {
-    await fetch(`http://192.168.100.10:3001/admin/customers/${params.id}/notes`, {
+    await fetch(`http://localhost:3001admin/customers/${params.id}/notes`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ staffNotes: notes }),
@@ -57,7 +57,7 @@ export default function CustomerDetailPage() {
   }
 
   async function toggleVip() {
-    await fetch(`http://192.168.100.10:3001/admin/customers/${params.id}/vip`, {
+    await fetch(`http://localhost:3001admin/customers/${params.id}/vip`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });

@@ -218,4 +218,61 @@ export class AdminReservationsService {
       },
     });
   }
+
+    async updateDetails(
+    id: string,
+    dto: { date: string; time: string; partySize: number },
+    staffName: string
+  ) {
+    const reservation = await this.findOne(id);
+
+    const [hours, minutes] = dto.time.split(":").map(Number);
+    const reservationDate = new Date(dto.date);
+    reservationDate.setHours(hours, minutes, 0, 0);
+
+    const candidateTables = await this.prisma.diningTable.findMany({
+      where: { capacity: { gte: dto.partySize } },
+      orderBy: { capacity: "asc" },
+    });
+    if (candidateTables.length === 0) {
+      throw new NotFoundException("No table can accommodate this party size.");
+    }
+
+    const conflicting = await this.prisma.reservation.findMany({
+      where: {
+        id: { not: id },
+        reservationDate,
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        tableId: { in: candidateTables.map((t) => t.id) },
+      },
+      select: { tableId: true },
+    });
+    const bookedIds = new Set(conflicting.map((r) => r.tableId));
+
+    // Prefer keeping the current table if it still fits and is free; otherwise find another.
+    const currentStillWorks =
+      reservation.table &&
+      reservation.table.capacity >= dto.partySize &&
+      !bookedIds.has(reservation.table.id);
+    const chosenTable = currentStillWorks
+      ? reservation.table
+      : candidateTables.find((t) => !bookedIds.has(t.id));
+
+    if (!chosenTable) {
+      throw new NotFoundException("We're fully booked for that new time. Please choose a different slot.");
+    }
+
+    return this.prisma.reservation.update({
+      where: { id },
+      data: {
+        partySize: dto.partySize,
+        reservationDate,
+        table: { connect: { id: chosenTable.id } },
+        statusHistory: {
+          create: { status: reservation.status, note: `Reservation details updated by ${staffName}.` },
+        },
+      },
+      include: { table: true, customer: true },
+    });
+  }
 }
