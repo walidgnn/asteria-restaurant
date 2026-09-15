@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type Category = { id: string; name: string };
 type CustomizationGroup = { id: string; name: string };
@@ -158,16 +159,10 @@ export function DishForm({ initial }: { initial?: Partial<DishData> & { id: stri
       </div>
 
       <div className="mt-6">
-        <label className="text-xs font-medium tracking-wide text-stone">IMAGE URL</label>
-        <input
+        <ImageUpload
           value={form.imageUrl}
-          onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-          placeholder="/images/dish-name.jpg or https://..."
-          className="mt-2 w-full border-b border-border bg-transparent py-2 text-sm text-charcoal placeholder:text-stone/60 focus:border-charcoal focus:outline-none"
+          onChange={(url) => setForm({ ...form, imageUrl: url })}
         />
-        <p className="mt-1.5 text-xs italic text-stone">
-          No file upload yet — paste a path or URL. File uploads are a future improvement.
-        </p>
       </div>
 
       <div className="mt-6 flex gap-8">

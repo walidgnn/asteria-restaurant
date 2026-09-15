@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Search, MoreVertical } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type GalleryImage = { id: string; title: string | null; url: string; section: string; isActive: boolean };
 
@@ -95,15 +96,18 @@ export default function GalleryPage() {
       </div>
 
       {showUpload && (
-        <form onSubmit={handleUpload} className="mt-6 flex flex-wrap items-end gap-4 border border-border p-6">
-          <input name="title" placeholder="Title" className="border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none" />
-          <input name="url" required placeholder="Image URL or path" className="min-w-[240px] flex-1 border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none" />
-          <select name="section" className="border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none">
-            {SECTIONS.filter((s) => s !== "all").map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <button type="submit" className="bg-olive px-6 py-2.5 text-sm font-medium tracking-wide text-white hover:bg-olive-dark">ADD</button>
-          <button type="button" onClick={() => setShowUpload(false)} className="text-sm font-medium tracking-wide text-charcoal">CANCEL</button>
-        </form>
+        <UploadForm
+          onCancel={() => setShowUpload(false)}
+          onSubmit={async (data) => {
+            await fetch("http://localhost:3001/admin/restaurant/gallery", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+              body: JSON.stringify(data),
+            });
+            setShowUpload(false);
+            await load();
+          }}
+        />
       )}
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
@@ -174,6 +178,47 @@ export default function GalleryPage() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function UploadForm({
+  onCancel,
+  onSubmit,
+}: {
+  onCancel: () => void;
+  onSubmit: (data: { title: string; url: string; section: string }) => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [section, setSection] = useState("gallery");
+
+  return (
+    <div className="mt-6 flex flex-wrap items-end gap-4 border border-border p-6">
+      <ImageUpload value={url} onChange={setUrl} />
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Title"
+        className="border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none"
+      />
+      <select
+        value={section}
+        onChange={(e) => setSection(e.target.value)}
+        className="border-b border-border bg-transparent py-2 text-sm text-charcoal focus:border-charcoal focus:outline-none"
+      >
+        {SECTIONS.filter((s) => s !== "all").map((s) => <option key={s} value={s}>{s}</option>)}
+      </select>
+      <button
+        onClick={() => url && onSubmit({ title, url, section })}
+        disabled={!url}
+        className="bg-olive px-6 py-2.5 text-sm font-medium tracking-wide text-white hover:bg-olive-dark disabled:opacity-50"
+      >
+        ADD
+      </button>
+      <button onClick={onCancel} className="text-sm font-medium tracking-wide text-charcoal">
+        CANCEL
+      </button>
     </div>
   );
 }
