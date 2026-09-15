@@ -13,7 +13,7 @@ export default function OpeningHoursPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001admin/restaurant/hours", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("http://localhost:3001/admin/restaurant/hours", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then(setHours);
   }, [token]);
@@ -23,7 +23,7 @@ export default function OpeningHoursPage() {
   }
 
   async function handleSave() {
-    await fetch("http://localhost:3001admin/restaurant/hours", {
+    await fetch("http://localhost:3001/admin/restaurant/hours", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(hours.map((h) => ({ dayOfWeek: h.dayOfWeek, openTime: h.openTime, closeTime: h.closeTime, isClosed: h.isClosed }))),

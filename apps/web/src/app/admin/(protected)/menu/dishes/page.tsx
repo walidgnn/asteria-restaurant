@@ -37,7 +37,7 @@ export default function AdminDishesPage() {
     if (statusFilter) params.set("isAvailable", statusFilter);
     if (featuredFilter) params.set("isFeatured", featuredFilter);
 
-    const res = await fetch(`http://localhost:3001admin/menu/dishes?${params}`, {
+    const res = await fetch(`http://localhost:3001/admin/menu/dishes?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setDishes(await res.json());
@@ -46,7 +46,7 @@ export default function AdminDishesPage() {
   useEffect(() => {
     if (!token) return;
     load();
-    fetch("http://localhost:3001admin/menu/categories", {
+    fetch("http://localhost:3001/admin/menu/categories", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -54,7 +54,7 @@ export default function AdminDishesPage() {
   }, [token, search, categoryFilter, statusFilter, featuredFilter]);
 
   async function toggleField(dish: Dish, field: "isAvailable" | "isFeatured") {
-    await fetch(`http://localhost:3001admin/menu/dishes/${dish.id}`, {
+    await fetch(`http://localhost:3001/admin/menu/dishes/${dish.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ [field]: !dish[field] }),
@@ -64,7 +64,7 @@ export default function AdminDishesPage() {
 
   async function handleDelete(dish: Dish) {
     if (!confirm(`Delete "${dish.name}"? This cannot be undone.`)) return;
-    const res = await fetch(`http://localhost:3001admin/menu/dishes/${dish.id}`, {
+    const res = await fetch(`http://localhost:3001/admin/menu/dishes/${dish.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

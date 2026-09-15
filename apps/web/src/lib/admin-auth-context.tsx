@@ -46,7 +46,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   async function fetchMe(authToken: string) {
     try {
-      const res = await fetch("http://localhost:3001admin/auth/me", {
+      const res = await fetch("http://localhost:3001/admin/auth/me", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) throw new Error("Invalid session");
@@ -62,7 +62,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:3001admin/auth/login", {
+    const res = await fetch("http://localhost:3001/admin/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

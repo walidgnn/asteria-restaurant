@@ -30,9 +30,9 @@ export default function StaffSettingsPage() {
 
   async function load() {
     const [staffRes, rolesRes, permsRes] = await Promise.all([
-      fetch("http://localhost:3001admin/staff", { headers: { Authorization: `Bearer ${token}` } }),
-      fetch("http://localhost:3001admin/staff/roles", { headers: { Authorization: `Bearer ${token}` } }),
-      fetch("http://localhost:3001admin/staff/permissions", { headers: { Authorization: `Bearer ${token}` } }),
+      fetch("http://localhost:3001/admin/staff", { headers: { Authorization: `Bearer ${token}` } }),
+      fetch("http://localhost:3001/admin/staff/roles", { headers: { Authorization: `Bearer ${token}` } }),
+      fetch("http://localhost:3001/admin/staff/permissions", { headers: { Authorization: `Bearer ${token}` } }),
     ]);
     const staffData = await staffRes.json();
     const rolesData = await rolesRes.json();
@@ -55,7 +55,7 @@ export default function StaffSettingsPage() {
     e.preventDefault();
     setError(null);
     const form = new FormData(e.currentTarget);
-    const res = await fetch("http://localhost:3001admin/staff/invite", {
+    const res = await fetch("http://localhost:3001/admin/staff/invite", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
@@ -75,7 +75,7 @@ export default function StaffSettingsPage() {
   }
 
   async function handleResend(id: string) {
-    await fetch(`http://localhost:3001admin/staff/${id}/resend`, {
+    await fetch(`http://localhost:3001/admin/staff/${id}/resend`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -88,7 +88,7 @@ export default function StaffSettingsPage() {
     const currentIds = selectedRole.permissions.map((p) => p.permission.id);
     const nextIds = has ? currentIds.filter((id) => id !== permissionId) : [...currentIds, permissionId];
 
-    await fetch(`http://localhost:3001admin/staff/roles/${selectedRole.id}/permissions`, {
+    await fetch(`http://localhost:3001/admin/staff/roles/${selectedRole.id}/permissions`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ permissionIds: nextIds }),

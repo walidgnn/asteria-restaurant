@@ -37,7 +37,7 @@ export default function OrderConfirmationPage() {
     }
 
     function fetchOrder() {
-      fetch(`http://localhost:3001orders/${orderId}`, {
+      fetch(`http://localhost:3001/orders/${orderId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => (res.ok ? res.json() : null))

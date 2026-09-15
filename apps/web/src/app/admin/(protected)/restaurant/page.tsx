@@ -11,7 +11,7 @@ export default function RestaurantInfoPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001admin/restaurant/info", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("http://localhost:3001/admin/restaurant/info", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then(setData);
   }, [token]);
@@ -21,7 +21,7 @@ export default function RestaurantInfoPage() {
   }
 
   async function handleSave() {
-    await fetch("http://localhost:3001admin/restaurant/info", {
+    await fetch("http://localhost:3001/admin/restaurant/info", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
@@ -38,7 +38,7 @@ export default function RestaurantInfoPage() {
   }
 
   async function toggleOpen() {
-    const res = await fetch("http://localhost:3001admin/restaurant/info", {
+    const res = await fetch("http://localhost:3001/admin/restaurant/info", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ isOpen: !data.isOpen }),

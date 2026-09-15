@@ -37,7 +37,7 @@ export default function ReservationsPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001reservations", {
+      const res = await fetch("http://localhost:3001/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

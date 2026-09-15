@@ -29,7 +29,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001auth/me/password", {
+      const res = await fetch("http://localhost:3001/auth/me/password", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

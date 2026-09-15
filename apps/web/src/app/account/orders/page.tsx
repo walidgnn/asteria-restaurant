@@ -26,7 +26,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001orders", {
+    fetch("http://localhost:3001/orders", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

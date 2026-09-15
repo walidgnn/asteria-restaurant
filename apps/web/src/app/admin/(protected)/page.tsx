@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001admin/dashboard", {
+    fetch("http://localhost:3001/admin/dashboard", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

@@ -28,7 +28,7 @@ export default function AdminCustomersPage() {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     params.set("page", String(page));
-    fetch(`http://localhost:3001admin/customers?${params}`, {
+    fetch(`http://localhost:3001/admin/customers?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

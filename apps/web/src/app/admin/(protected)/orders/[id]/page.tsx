@@ -41,7 +41,7 @@ export default function AdminOrderDetailPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`http://localhost:3001admin/orders/${params.id}`, {
+    fetch(`http://localhost:3001/admin/orders/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -49,7 +49,7 @@ export default function AdminOrderDetailPage() {
   }, [token, params.id]);
 
   async function refresh() {
-    const res = await fetch(`http://localhost:3001admin/orders/${params.id}`, {
+    const res = await fetch(`http://localhost:3001/admin/orders/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setOrder(await res.json());
@@ -57,7 +57,7 @@ export default function AdminOrderDetailPage() {
 
   async function handleAdvance() {
     setBusy(true);
-    await fetch(`http://localhost:3001admin/orders/${params.id}/advance`, {
+    await fetch(`http://localhost:3001/admin/orders/${params.id}/advance`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -68,7 +68,7 @@ export default function AdminOrderDetailPage() {
   async function handleCancel() {
     if (!confirm("Cancel this order?")) return;
     setBusy(true);
-    await fetch(`http://localhost:3001admin/orders/${params.id}/cancel`, {
+    await fetch(`http://localhost:3001/admin/orders/${params.id}/cancel`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });

@@ -27,7 +27,7 @@ export default function ReservationConfirmationPage() {
       setLoading(false);
       return;
     }
-    fetch(`http://localhost:3001reservations/${reservationId}`, {
+    fetch(`http://localhost:3001/reservations/${reservationId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))

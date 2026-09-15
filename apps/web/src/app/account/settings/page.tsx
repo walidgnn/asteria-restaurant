@@ -20,7 +20,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001auth/me", {
+    fetch("http://localhost:3001/auth/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -34,7 +34,7 @@ export default function SettingsPage() {
 
   async function updatePref(key: keyof Preferences, value: boolean) {
     setPrefs((p) => (p ? { ...p, [key]: value } : p));
-    await fetch("http://localhost:3001auth/me", {
+    await fetch("http://localhost:3001/auth/me", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -165,7 +165,7 @@ export default function SettingsPage() {
   async function handleDeleteAccount() {
     setDeleting(true);
     try {
-      await fetch("http://localhost:3001auth/me", {
+      await fetch("http://localhost:3001/auth/me", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

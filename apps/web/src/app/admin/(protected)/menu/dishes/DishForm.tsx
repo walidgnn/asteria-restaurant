@@ -41,10 +41,10 @@ export function DishForm({ initial }: { initial?: Partial<DishData> & { id: stri
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001admin/menu/categories", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("http://localhost:3001/admin/menu/categories", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then(setCategories);
-    fetch("http://localhost:3001admin/menu/customizations", { headers: { Authorization: `Bearer ${token}` } })
+    fetch("http://localhost:3001/admin/menu/customizations", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -84,8 +84,8 @@ export function DishForm({ initial }: { initial?: Partial<DishData> & { id: stri
 
     try {
       const url = initial?.id
-        ? `http://localhost:3001admin/menu/dishes/${initial.id}`
-        : "http://localhost:3001admin/menu/dishes";
+        ? `http://localhost:3001/admin/menu/dishes/${initial.id}`
+        : "http://localhost:3001/admin/menu/dishes";
       const res = await fetch(url, {
         method: initial?.id ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },

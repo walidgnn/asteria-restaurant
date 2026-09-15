@@ -37,7 +37,7 @@ export default function AdminTablesPage() {
   async function load() {
     const params = new URLSearchParams();
     if (tab !== "ALL") params.set("status", tab);
-    const res = await fetch(`http://localhost:3001admin/tables?${params}`, {
+    const res = await fetch(`http://localhost:3001/admin/tables?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -53,7 +53,7 @@ export default function AdminTablesPage() {
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    await fetch("http://localhost:3001admin/tables", {
+    await fetch("http://localhost:3001/admin/tables", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
@@ -67,7 +67,7 @@ export default function AdminTablesPage() {
 
   async function handleDelete(table: Table) {
     if (!confirm(`Delete table ${table.number}?`)) return;
-    const res = await fetch(`http://localhost:3001admin/tables/${table.id}`, {
+    const res = await fetch(`http://localhost:3001/admin/tables/${table.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -241,7 +241,7 @@ function ManageTableModal({
   const [reason, setReason] = useState(table.unavailableReason ?? "");
 
   async function handleSave() {
-    await fetch(`http://localhost:3001admin/tables/${table.id}/status`, {
+    await fetch(`http://localhost:3001/admin/tables/${table.id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
