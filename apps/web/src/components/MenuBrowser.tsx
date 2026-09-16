@@ -78,7 +78,7 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
             {cat.dishes.map((dish) => (
               <div
                 key={dish.id}
-                className="border-b border-border py-6 first:pt-0"
+                className="border-b border-border py-6"
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <Link href={`/menu/${dish.id}`}>
@@ -103,7 +103,7 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
                       basePrice: parseFloat(dish.price),
                     })
                   }
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-charcoal transition-colors hover:text-terracotta"
+                  className="mt-3 inline-flex items-center gap-1.5 border border-border px-4 py-2 text-xs font-medium tracking-wide text-charcoal transition-colors hover:border-charcoal hover:bg-mist active:bg-mist"
                 >
                   <Plus size={12} strokeWidth={2} />
                   ADD
