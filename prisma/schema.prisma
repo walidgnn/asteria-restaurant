@@ -23,6 +23,8 @@ model Customer {
   deletedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  resetToken       String?
+  resetTokenExpiry DateTime?
 
   addresses    Address[]
   orders       Order[]

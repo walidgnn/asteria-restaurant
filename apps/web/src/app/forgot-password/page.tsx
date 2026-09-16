@@ -7,14 +7,19 @@ export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const email = form.get("email") as string;
+
     setLoading(true);
-    // No real email-sending backend yet — simulate the request.
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-    }, 600);
+    await fetch("http://localhost:3001/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    setLoading(false);
+    setSubmitted(true);
   }
 
   return (
@@ -50,6 +55,7 @@ export default function ForgotPasswordPage() {
                   EMAIL ADDRESS
                 </label>
                 <input
+                  name="email"
                   type="email"
                   required
                   placeholder="Email Address"

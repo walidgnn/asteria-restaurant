@@ -9,12 +9,14 @@ import { PrismaService } from "../prisma/prisma.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import * as crypto from "crypto";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService
+    private jwt: JwtService,
+    private email: EmailService
   ) {}
 
   async register(dto: RegisterDto) {
@@ -127,6 +129,51 @@ export class AuthService {
         password: await bcrypt.hash(crypto.randomUUID(), 10), // unusable random password
         deletedAt: new Date(),
       },
+    });
+
+    return { success: true };
+  }
+
+    async requestPasswordReset(email: string) {
+    const customer = await this.prisma.customer.findUnique({ where: { email } });
+    // Always return success, even if no account exists — never reveal which emails are registered.
+    if (!customer || customer.deletedAt) {
+      return { success: true };
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await this.prisma.customer.update({
+      where: { id: customer.id },
+      data: { resetToken: token, resetTokenExpiry: expiry },
+    });
+
+    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+    await this.email.send(
+      customer.email,
+      "Reset your Asteria password",
+      `<p>Hi ${customer.firstName},</p>
+       <p>Click below to reset your password. This link expires in 1 hour.</p>
+       <p><a href="${resetUrl}">Reset Password</a></p>
+       <p>If you didn't request this, you can safely ignore this email.</p>`
+    );
+
+    return { success: true };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const customer = await this.prisma.customer.findFirst({
+      where: { resetToken: token, resetTokenExpiry: { gt: new Date() } },
+    });
+    if (!customer) {
+      throw new UnauthorizedException("This reset link is invalid or has expired.");
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.prisma.customer.update({
+      where: { id: customer.id },
+      data: { password: hashed, resetToken: null, resetTokenExpiry: null },
     });
 
     return { success: true };

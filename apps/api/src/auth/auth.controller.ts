@@ -25,19 +25,32 @@ export class AuthController {
   me(@Req() req: any) {
     return req.user;
   }
+  
   @UseGuards(JwtAuthGuard)
   @Patch("me")
   updateProfile(@Req() req: any, @Body() dto: UpdateProfileDto) {
     return this.authService.updateProfile(req.user.id, dto);
   }
+
   @UseGuards(JwtAuthGuard)
   @Patch("me/password")
   changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
     return this.authService.changePassword(req.user.id, dto);
   }
+
     @UseGuards(JwtAuthGuard)
-  @Delete("me")
+    @Delete("me")
   deleteAccount(@Req() req: any) {
     return this.authService.deleteAccount(req.user.id);
+  }
+
+  @Post("forgot-password")
+  requestReset(@Body() body: { email: string }) {
+    return this.authService.requestPasswordReset(body.email);
+  }
+
+  @Post("reset-password")
+  resetPassword(@Body() body: { token: string; newPassword: string }) {
+    return this.authService.resetPassword(body.token, body.newPassword);
   }
 }
