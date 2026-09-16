@@ -1,10 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private email: EmailService
+  ) {}
 
     async createOrder(customerId: string, dto: CreateOrderDto) {
     if (dto.items.length === 0) {
@@ -61,9 +65,25 @@ export class OrdersService {
         },
       },
       include: {
-        items: { include: { dish: true, customizations: { include: { option: true } } } },
+        items: { include: { dish: true } },
+        customer: true,
       },
     });
+
+    const itemsHtml = order.items
+      .map((item) => `<li>${item.quantity} × ${item.dish.name} — €${Number(item.unitPrice).toFixed(2)}</li>`)
+      .join("");
+
+    await this.email.send(
+      order.customer.email,
+      `Order Confirmed — #A${order.orderNumber}`,
+      `<p>Hi ${order.customer.firstName},</p>
+       <p>Thank you for your order! Here's a summary:</p>
+       <ul>${itemsHtml}</ul>
+       <p><strong>Total: €${Number(order.totalAmount).toFixed(2)}</strong></p>
+       <p>Order type: ${order.orderType}</p>
+       <p>We'll let you know as your order progresses. Thank you for choosing Asteria!</p>`
+    );
 
     return order;
   }

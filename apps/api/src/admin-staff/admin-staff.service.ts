@@ -2,10 +2,14 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 import { PrismaService } from "../prisma/prisma.service";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class AdminStaffService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private email: EmailService
+  ) {}
 
   private assertManager(roles: string[]) {
     if (!roles.includes("Manager")) {
@@ -39,6 +43,8 @@ export class AdminStaffService {
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (existing) throw new ConflictException("A staff account with this email already exists.");
 
+    const role = await this.prisma.role.findUnique({ where: { id: dto.roleId } });
+
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -50,6 +56,16 @@ export class AdminStaffService {
       },
     });
     await this.prisma.userRole.create({ data: { userId: user.id, roleId: dto.roleId } });
+
+    await this.email.send(
+      dto.email,
+      "You've been invited to join Asteria's team",
+      `<p>Hi ${dto.firstName},</p>
+       <p>You've been invited to join the Asteria staff team as <strong>${role?.name ?? "a team member"}</strong>.</p>
+       <p>Please contact your manager to complete your account setup.</p>
+       <p>— Asteria Management</p>`
+    );
+
     return user;
   }
 
