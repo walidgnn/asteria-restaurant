@@ -70,21 +70,6 @@ export class OrdersService {
       },
     });
 
-    const itemsHtml = order.items
-      .map((item) => `<li>${item.quantity} × ${item.dish.name} — €${Number(item.unitPrice).toFixed(2)}</li>`)
-      .join("");
-
-    await this.email.send(
-      order.customer.email,
-      `Order Confirmed — #A${order.orderNumber}`,
-      `<p>Hi ${order.customer.firstName},</p>
-       <p>Thank you for your order! Here's a summary:</p>
-       <ul>${itemsHtml}</ul>
-       <p><strong>Total: €${Number(order.totalAmount).toFixed(2)}</strong></p>
-       <p>Order type: ${order.orderType}</p>
-       <p>We'll let you know as your order progresses. Thank you for choosing Asteria!</p>`
-    );
-
     return order;
   }
 
