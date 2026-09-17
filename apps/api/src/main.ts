@@ -3,11 +3,15 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { join } from "path";
 import { AppModule } from "./app.module";
+import helmet from "helmet";
+import { CustomThrottlerExceptionFilter } from "./common/throttler-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
+  
+  app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalFilters(new CustomThrottlerExceptionFilter());
   app.useStaticAssets(join(__dirname, "..", "uploads"), {
     prefix: "/uploads/",
   });

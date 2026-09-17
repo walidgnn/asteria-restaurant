@@ -219,7 +219,7 @@ export class AdminReservationsService {
     });
   }
 
-    async updateDetails(
+  async updateDetails(
     id: string,
     dto: { date: string; time: string; partySize: number },
     staffName: string
