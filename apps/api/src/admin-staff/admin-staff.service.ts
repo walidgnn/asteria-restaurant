@@ -3,6 +3,7 @@ import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
+import { escapeHtml } from "../common/sanitize";
 
 @Injectable()
 export class AdminStaffService {
@@ -60,8 +61,8 @@ export class AdminStaffService {
     await this.email.send(
       dto.email,
       "You've been invited to join Asteria's team",
-      `<p>Hi ${dto.firstName},</p>
-       <p>You've been invited to join the Asteria staff team as <strong>${role?.name ?? "a team member"}</strong>.</p>
+      `<p>Hi ${escapeHtml(dto.firstName)},</p>
+       <p>You've been invited to join the Asteria staff team as <strong>${escapeHtml(role?.name ?? "a team member")}</strong>.</p>
        <p>Please contact your manager to complete your account setup.</p>
        <p>— Asteria Management</p>`
     );

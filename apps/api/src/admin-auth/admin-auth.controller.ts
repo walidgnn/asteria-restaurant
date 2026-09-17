@@ -4,11 +4,13 @@ import { AdminLoginDto } from "./dto/admin-login.dto";
 import { AdminJwtAuthGuard } from "./admin-jwt-auth.guard";
 import { UpdateStaffProfileDto } from "./dto/update-staff-profile.dto";
 import { ChangeStaffPasswordDto } from "./dto/change-staff-password.dto";
+import { Throttle } from "@nestjs/throttler";
 
 @Controller("admin/auth")
 export class AdminAuthController {
   constructor(private adminAuthService: AdminAuthService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post("login")
   login(@Body() dto: AdminLoginDto) {
     return this.adminAuthService.login(dto);

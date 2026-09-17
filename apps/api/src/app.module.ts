@@ -18,10 +18,21 @@ import { AdminStaffModule } from "./admin-staff/admin-staff.module";
 import { AdminRestaurantModule } from "./admin-restaurant/admin-restaurant.module";
 import { UploadModule } from "./upload/upload.module";
 import { EmailModule } from "./email/email.module";
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
-      imports: [PrismaModule, MenuModule, AuthModule, OrdersModule, ReservationsModule, PaymentsModule, AdminAuthModule, AdminDashboardModule, AdminOrdersModule, AdminReservationsModule, AdminMenuModule, AdminTablesModule, AdminCustomersModule, AdminStaffModule, AdminRestaurantModule, UploadModule, EmailModule],
+  imports: [
+    ThrottlerModule.forRoot([{ name: "default", ttl: 60000, limit: 20 }]),
+    PrismaModule, MenuModule, AuthModule, OrdersModule, ReservationsModule,
+    PaymentsModule, AdminAuthModule, AdminDashboardModule, AdminOrdersModule,
+    AdminReservationsModule, AdminMenuModule, AdminTablesModule, AdminCustomersModule,
+    AdminStaffModule, AdminRestaurantModule, UploadModule, EmailModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}

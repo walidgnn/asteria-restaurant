@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/commo
 import { PrismaService } from "../prisma/prisma.service";
 import { StripeService } from "./stripe.service";
 import { EmailService } from "../email/email.service";
-
+import { escapeHtml } from "../common/sanitize";
 
 @Injectable()
 export class PaymentsService {
@@ -86,17 +86,17 @@ export class PaymentsService {
 
       if (fullOrder) {
         const itemsHtml = fullOrder.items
-          .map((item) => `<li>${item.quantity} × ${item.dish.name} — €${Number(item.unitPrice).toFixed(2)}</li>`)
+          .map((item) => `<li>${item.quantity} × ${escapeHtml(item.dish.name)} — €${Number(item.unitPrice).toFixed(2)}</li>`)
           .join("");
 
         await this.email.send(
           fullOrder.customer.email,
           `Order Confirmed — #A${fullOrder.orderNumber}`,
-          `<p>Hi ${fullOrder.customer.firstName},</p>
+          `<p>Hi ${escapeHtml(fullOrder.customer.firstName)},</p>
            <p>Your payment was successful and your order is confirmed! Here's a summary:</p>
            <ul>${itemsHtml}</ul>
            <p><strong>Total: €${Number(fullOrder.totalAmount).toFixed(2)}</strong></p>
-           <p>Order type: ${fullOrder.orderType}</p>
+           <p>Order type: ${escapeHtml(fullOrder.orderType)}</p>
            <p>We'll let you know as your order progresses. Thank you for choosing Asteria!</p>`
         );
       }

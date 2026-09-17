@@ -10,6 +10,7 @@ import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import * as crypto from "crypto";
 import { EmailService } from "../email/email.service";
+import { escapeHtml } from "../common/sanitize";
 
 @Injectable()
 export class AuthService {
@@ -153,7 +154,7 @@ export class AuthService {
     await this.email.send(
       customer.email,
       "Reset your Asteria password",
-      `<p>Hi ${customer.firstName},</p>
+      `<p>Hi ${escapeHtml(customer.firstName)},</p>
        <p>Click below to reset your password. This link expires in 1 hour.</p>
        <p><a href="${resetUrl}">Reset Password</a></p>
        <p>If you didn't request this, you can safely ignore this email.</p>`
