@@ -31,7 +31,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="grid min-h-screen md:grid-cols-2">
+    <div className="min-h-screen md:grid md:grid-cols-2">
+      {/* Mobile top banner with overlaid logo */}
+      <div className="relative h-44 w-full md:hidden">
+        <Image
+          src="/images/dining-room.jpg"
+          alt="Asteria's dining room bathed in morning light"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/30" />
+        <Link
+          href="/"
+          className="absolute inset-x-0 top-8 text-center font-serif text-2xl tracking-wide text-white"
+        >
+          ASTERIA
+        </Link>
+      </div>
+
+      {/* Desktop full-height image */}
       <div className="relative hidden md:block">
         <Image
           src="/images/dining-room.jpg"
@@ -41,17 +59,20 @@ export default function LoginPage() {
         />
       </div>
 
-      <div className="flex flex-col justify-center px-8 py-16 sm:px-16">
+      {/* Form card — overlaps the mobile banner, plain centered column on desktop */}
+      <div className="relative -mt-6 flex flex-col justify-center rounded-t-3xl bg-cream px-8 py-10 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] sm:px-16 md:mt-0 md:rounded-none md:py-16 md:shadow-none">
         <Link
           href="/"
-          className="mb-12 text-center font-serif text-2xl text-charcoal"
+          className="mb-8 hidden text-center font-serif text-2xl text-charcoal md:mb-12 md:block"
         >
           ASTERIA
         </Link>
 
         <div className="mx-auto w-full max-w-sm">
-          <h1 className="font-serif text-4xl text-charcoal">Welcome Back</h1>
-          <p className="mt-3 text-stone">
+          <h1 className="text-center font-serif text-3xl text-charcoal md:text-left md:text-4xl">
+            Welcome Back
+          </h1>
+          <p className="mt-3 text-center text-stone md:text-left">
             Sign in to continue your Asteria experience.
           </p>
 
@@ -71,7 +92,7 @@ export default function LoginPage() {
                 type="email"
                 required
                 placeholder="Enter your email"
-                className="mt-2 w-full border-b border-border bg-transparent py-2 text-sm text-charcoal placeholder:text-stone/60 focus:border-charcoal focus:outline-none"
+                className="mt-2 w-full border border-border bg-cream px-4 py-3 text-sm text-charcoal shadow-sm placeholder:text-stone/60 focus:border-charcoal focus:outline-none"
               />
             </div>
 
@@ -87,19 +108,19 @@ export default function LoginPage() {
                   Forgot Password?
                 </Link>
               </div>
-              <input
-                name="password"
-                type="password"
-                required
-                placeholder="Enter your password"
-                className="mt-2 w-full border-b border-border bg-transparent py-2 text-sm text-charcoal placeholder:text-stone/60 focus:border-charcoal focus:outline-none"
-              />
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Enter your password"
+                  className="mt-2 w-full border border-border bg-cream px-4 py-3 text-sm text-charcoal shadow-sm placeholder:text-stone/60 focus:border-charcoal focus:outline-none"
+                />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-olive px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-colors hover:bg-olive-dark disabled:opacity-60"
+              className="w-full bg-olive px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-colors hover:bg-olive-dark active:bg-olive-dark disabled:opacity-60"
             >
               {loading ? "SIGNING IN..." : "SIGN IN →"}
             </button>
