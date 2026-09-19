@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
+import { API_URL } from "@/lib/config";
 
 export function PaymentForm({ orderId }: { orderId: string }) {
   const stripe = useStripe();

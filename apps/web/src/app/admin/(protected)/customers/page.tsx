@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 
 type Customer = {

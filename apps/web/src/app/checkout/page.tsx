@@ -10,6 +10,7 @@ import { useCart } from "@/lib/cart-context";
 import { useAuth } from "@/lib/auth-context";
 import { stripePromise } from "@/lib/stripe";
 import { PaymentForm } from "@/components/PaymentForm";
+import { API_URL } from "@/lib/config";
 
 export default function CheckoutPage() {
   const router = useRouter();

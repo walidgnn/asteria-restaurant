@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MoreVertical } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 
 type Table = {

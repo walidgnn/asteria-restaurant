@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
+import { API_URL } from "@/lib/config";
 
 type Reservation = {
   id: string;

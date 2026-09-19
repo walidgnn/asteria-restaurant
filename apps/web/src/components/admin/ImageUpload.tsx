@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Upload, X } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 export function ImageUpload({
   value,

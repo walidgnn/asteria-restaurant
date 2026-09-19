@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, Star, MoreVertical } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 type Category = { id: string; name: string };
 type Dish = {

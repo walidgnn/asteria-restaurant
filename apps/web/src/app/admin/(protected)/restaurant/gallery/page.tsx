@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Search, MoreVertical } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { API_URL } from "@/lib/config";
 
 type GalleryImage = { id: string; title: string | null; url: string; section: string; isActive: boolean };
 

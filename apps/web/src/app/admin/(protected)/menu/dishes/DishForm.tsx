@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { API_URL } from "@/lib/config";
 
 type Category = { id: string; name: string };
 type CustomizationGroup = { id: string; name: string };

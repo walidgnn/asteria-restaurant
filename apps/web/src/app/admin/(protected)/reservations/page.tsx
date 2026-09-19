@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 type Reservation = {
   id: string;

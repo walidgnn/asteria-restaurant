@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { DishForm } from "../DishForm";
+import { API_URL } from "@/lib/config";
 
 export default function EditDishPage() {
   const params = useParams();

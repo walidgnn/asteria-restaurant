@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 const NEXT_LABEL: Record<string, string> = {
   PENDING: "MARK AS CONFIRMED",

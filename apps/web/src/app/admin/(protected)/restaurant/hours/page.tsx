@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 type Hour = { dayOfWeek: number; dayName: string; openTime: string; closeTime: string; isClosed: boolean };
 

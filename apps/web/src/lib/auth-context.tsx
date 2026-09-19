@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "./config";
 
 import {
   createContext,

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { API_URL } from "@/lib/config";
 
 type Reservation = {
   id: string;

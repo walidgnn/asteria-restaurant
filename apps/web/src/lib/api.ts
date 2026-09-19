@@ -1,3 +1,5 @@
+import { API_URL } from "./config";
+
 export type Dish = {
   id: string;
   name: string;
@@ -11,7 +13,6 @@ export type MenuCategory = {
   dishes: Dish[];
 };
 
-import { API_URL } from "./config";
 export async function getMenu(): Promise<MenuCategory[]> {
   const res = await fetch(`${API_URL}/menu`, {
     cache: "no-store",

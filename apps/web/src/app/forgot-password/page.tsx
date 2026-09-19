@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { API_URL } from "@/lib/config";
 
 export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);

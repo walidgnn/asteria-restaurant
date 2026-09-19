@@ -8,6 +8,7 @@ import { Minus, Plus } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart, SelectedCustomization } from "@/lib/cart-context";
+import { API_URL } from "@/lib/config";
 
 const IMAGE_MAP: Record<string, string> = {
   "Grilled Octopus": "/images/dish-octopus.jpg",

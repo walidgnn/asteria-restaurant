@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/config";
 
 type Preferences = {
   marketingOptIn: boolean;

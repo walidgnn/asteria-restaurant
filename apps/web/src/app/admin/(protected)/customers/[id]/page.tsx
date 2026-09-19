@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 type Order = { id: string; orderNumber: number; createdAt: string; orderType: string; totalAmount: string; status: string };
 type Reservation = { id: string; reservationDate: string; partySize: number; status: string; table: { number: string } | null };

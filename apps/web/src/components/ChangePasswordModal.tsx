@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { API_URL } from "@/lib/config";
 
 export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
   const { token } = useAuth();

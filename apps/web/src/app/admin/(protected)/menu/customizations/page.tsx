@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 type Option = { id: string; name: string; priceModifier: string; isAvailable: boolean };
 type Group = {

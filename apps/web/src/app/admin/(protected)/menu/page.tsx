@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Search, MoreVertical } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { API_URL } from "@/lib/config";
 
 type Category = {
   id: string;

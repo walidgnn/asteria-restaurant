@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 
 type Dish = { id: string; name: string; price: string };

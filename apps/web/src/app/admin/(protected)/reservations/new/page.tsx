@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_URL } from "@/lib/config";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 
 const TIME_SLOTS = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30"];
