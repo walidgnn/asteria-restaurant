@@ -36,7 +36,7 @@ export default function AdminReservationDetailPage() {
   const [availableTables, setAvailableTables] = useState<Table[]>([]);
 
   async function load() {
-    const res = await fetch(`http://localhost:3001/admin/reservations/${params.id}`, {
+    const res = await fetch(`${API_URL}/admin/reservations/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -51,7 +51,7 @@ export default function AdminReservationDetailPage() {
 
   async function handleAdvance() {
     setBusy(true);
-    await fetch(`http://localhost:3001/admin/reservations/${params.id}/advance`, {
+    await fetch(`${API_URL}/admin/reservations/${params.id}/advance`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -62,7 +62,7 @@ export default function AdminReservationDetailPage() {
   async function handleNoShow() {
     if (!confirm("Mark this reservation as a no-show?")) return;
     setBusy(true);
-    await fetch(`http://localhost:3001/admin/reservations/${params.id}/no-show`, {
+    await fetch(`${API_URL}/admin/reservations/${params.id}/no-show`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -73,7 +73,7 @@ export default function AdminReservationDetailPage() {
   async function handleCancel() {
     if (!confirm("Cancel this reservation?")) return;
     setBusy(true);
-    await fetch(`http://localhost:3001/admin/reservations/${params.id}/cancel`, {
+    await fetch(`${API_URL}/admin/reservations/${params.id}/cancel`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -82,7 +82,7 @@ export default function AdminReservationDetailPage() {
   }
 
   async function saveStaffNotes() {
-    await fetch(`http://localhost:3001/admin/reservations/${params.id}/staff-notes`, {
+    await fetch(`${API_URL}/admin/reservations/${params.id}/staff-notes`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ staffNotes }),
@@ -90,7 +90,7 @@ export default function AdminReservationDetailPage() {
   }
 
   async function openChangeTable() {
-    const res = await fetch(`http://localhost:3001/admin/reservations/${params.id}/available-tables`, {
+    const res = await fetch(`${API_URL}/admin/reservations/${params.id}/available-tables`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setAvailableTables(await res.json());
@@ -98,7 +98,7 @@ export default function AdminReservationDetailPage() {
   }
 
   async function assignTable(tableId: string) {
-    await fetch(`http://localhost:3001/admin/reservations/${params.id}/table`, {
+    await fetch(`${API_URL}/admin/reservations/${params.id}/table`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ tableId }),

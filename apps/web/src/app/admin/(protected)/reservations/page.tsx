@@ -30,7 +30,7 @@ export default function AdminReservationsPage() {
     if (statusFilter) params.set("status", statusFilter);
     if (search) params.set("search", search);
 
-    fetch(`http://localhost:3001/admin/reservations?${params}`, {
+    fetch(`${API_URL}/admin/reservations?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

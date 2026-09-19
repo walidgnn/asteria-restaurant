@@ -34,7 +34,7 @@ export function PaymentForm({ orderId }: { orderId: string }) {
     }
 
     if (paymentIntent?.status === "succeeded") {
-      await fetch("http://localhost:3001/payments/confirm", {
+      await fetch(`${API_URL}/payments/confirm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

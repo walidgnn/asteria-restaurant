@@ -26,7 +26,7 @@ export function ImageUpload({
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:3001/admin/upload/image", {
+      const res = await fetch(`${API_URL}/admin/upload/image`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

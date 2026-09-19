@@ -30,7 +30,7 @@ export default function ModifyReservationPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`http://localhost:3001/reservations/${params.id}`, {
+    fetch(`${API_URL}/reservations/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -49,7 +49,7 @@ export default function ModifyReservationPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:3001/reservations/${params.id}`, {
+      const res = await fetch(`${API_URL}/reservations/${params.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

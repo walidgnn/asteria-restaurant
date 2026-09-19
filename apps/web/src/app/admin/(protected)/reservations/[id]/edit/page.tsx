@@ -20,7 +20,7 @@ export default function EditReservationPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`http://localhost:3001/admin/reservations/${params.id}`, {
+    fetch(`${API_URL}/admin/reservations/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -38,7 +38,7 @@ export default function EditReservationPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:3001/admin/reservations/${params.id}/details`, {
+      const res = await fetch(`${API_URL}/admin/reservations/${params.id}/details`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ date, time, partySize }),

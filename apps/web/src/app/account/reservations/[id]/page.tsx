@@ -23,7 +23,7 @@ export default function ReservationDetailsPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`http://localhost:3001/reservations/${params.id}`, {
+    fetch(`${API_URL}/reservations/${params.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -33,7 +33,7 @@ export default function ReservationDetailsPage() {
   async function handleCancel() {
     if (!confirm("Are you sure you want to cancel this reservation?")) return;
     setCancelling(true);
-    await fetch(`http://localhost:3001/reservations/${params.id}/cancel`, {
+    await fetch(`${API_URL}/reservations/${params.id}/cancel`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });

@@ -21,7 +21,7 @@ export default function ProfilePage() {
     const phone = form.get("phone") as string;
 
     try {
-      const res = await fetch("http://localhost:3001/auth/me", {
+      const res = await fetch(`${API_URL}/auth/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

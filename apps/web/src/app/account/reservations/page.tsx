@@ -17,7 +17,7 @@ export default function ReservationsPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:3001/reservations", {
+    fetch(`${API_URL}/reservations`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

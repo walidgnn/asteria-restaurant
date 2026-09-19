@@ -35,7 +35,7 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      const orderRes = await fetch("http://localhost:3001/orders", {
+      const orderRes = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function CheckoutPage() {
       const order = await orderRes.json();
       setOrderId(order.id);
 
-      const intentRes = await fetch("http://localhost:3001/payments/create-intent", {
+      const intentRes = await fetch(`${API_URL}/payments/create-intent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

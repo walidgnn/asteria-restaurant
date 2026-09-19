@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
     const email = form.get("email") as string;
 
     setLoading(true);
-    await fetch("http://localhost:3001/auth/forgot-password", {
+    await fetch(`${API_URL}/auth/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
