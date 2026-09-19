@@ -11,6 +11,11 @@ import { Throttle } from "@nestjs/throttler";
 export class AuthController {
   constructor(private authService: AuthService) {}
   
+  @Post("verify-email")
+  verifyEmail(@Body() body: { token: string }) {
+    return this.authService.verifyEmail(body.token);
+  }
+
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post("register")
   register(@Body() dto: RegisterDto) {

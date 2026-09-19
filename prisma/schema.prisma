@@ -25,6 +25,9 @@ model Customer {
   updatedAt DateTime @updatedAt
   resetToken       String?
   resetTokenExpiry DateTime?
+  emailVerified Boolean @default(false)
+  verificationToken String?
+  verificationTokenExpiry DateTime?
 
   addresses    Address[]
   orders       Order[]
