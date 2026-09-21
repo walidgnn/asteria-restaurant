@@ -29,8 +29,6 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     const customer = await this.prisma.customer.create({
       data: {
@@ -38,23 +36,10 @@ export class AuthService {
         lastName: dto.lastName,
         email: dto.email,
         password: hashedPassword,
-        emailVerified: false,
-        verificationToken,
-        verificationTokenExpiry,
       },
     });
 
-    const verifyUrl = `http://localhost:3000/verify-email?token=${verificationToken}`;
-    await this.email.send(
-      customer.email,
-      "Verify your Asteria account",
-      `<p>Hi ${escapeHtml(customer.firstName)},</p>
-       <p>Thanks for creating an Asteria account. Please verify your email to activate it:</p>
-       <p><a href="${verifyUrl}">Verify My Email</a></p>
-       <p>This link expires in 24 hours.</p>`
-    );
-
-    return { pendingVerification: true, email: customer.email };
+    return this.signToken(customer.id, customer.email, customer.firstName, customer.lastName);
   }
 
   async verifyEmail(token: string) {
@@ -80,7 +65,6 @@ export class AuthService {
     if (!customer || customer.deletedAt) {
       throw new UnauthorizedException("Invalid email or password.");
     }
-
     const passwordValid = await bcrypt.compare(dto.password, customer.password);
     if (!passwordValid) {
       throw new UnauthorizedException("Invalid email or password.");

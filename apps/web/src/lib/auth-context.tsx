@@ -97,7 +97,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const err = await res.json().catch(() => null);
       throw new Error(err?.message || "Registration failed.");
     }
-    // No token yet — account requires email verification before login.
+    const data = await res.json();
+    localStorage.setItem(TOKEN_KEY, data.accessToken);
+    setToken(data.accessToken);
+    setCustomer(data.customer);
   }
 
   function logout() {
