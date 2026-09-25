@@ -7,9 +7,15 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import { extname } from "path";
+import { memoryStorage } from "multer";
+import { v2 as cloudinary } from "cloudinary";
 import { AdminJwtAuthGuard } from "../admin-auth/admin-jwt-auth.guard";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -20,13 +26,7 @@ export class UploadController {
   @Post("image")
   @UseInterceptors(
     FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "./uploads",
-        filename: (req, file, callback) => {
-          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-          callback(null, uniqueName);
-        },
-      }),
+      storage: memoryStorage(),
       limits: { fileSize: MAX_SIZE },
       fileFilter: (req, file, callback) => {
         if (!ALLOWED_TYPES.includes(file.mimetype)) {
@@ -36,10 +36,22 @@ export class UploadController {
       },
     })
   )
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException("No file uploaded.");
     }
-    return { url: `http://localhost:3001/uploads/${file.filename}` };
+
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "asteria" },
+        (error, result) => {
+          if (error || !result) return reject(error);
+          resolve(result as { secure_url: string });
+        }
+      );
+      uploadStream.end(file.buffer);
+    });
+
+    return { url: result.secure_url };
   }
 }

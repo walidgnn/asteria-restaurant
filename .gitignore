@@ -28,6 +28,3 @@ Thumbs.db
 prisma/migrations/dev.db
 /generated/prisma
 
-# Uploaded files (local dev only)
-apps/api/uploads/*
-!apps/api/uploads/.gitkeep

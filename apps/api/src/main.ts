@@ -12,9 +12,6 @@ async function bootstrap() {
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalFilters(new CustomThrottlerExceptionFilter());
-  app.useStaticAssets(join(__dirname, "..", "uploads"), {
-    prefix: "/uploads/",
-  });
 
   app.enableCors({
     origin: ["http://localhost:3000", "http://192.168.100.10:3000"],
