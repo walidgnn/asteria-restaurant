@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Check } from "lucide-react";
@@ -16,7 +16,7 @@ type Reservation = {
   notes: string | null;
 };
 
-export default function ReservationConfirmationPage() {
+function ReservationConfirmationContent() {
   const searchParams = useSearchParams();
   const reservationId = searchParams.get("reservation");
   const { token } = useAuth();
@@ -141,5 +141,13 @@ export default function ReservationConfirmationPage() {
 
       <Footer />
     </>
+  );
+}
+
+export default function ReservationConfirmationPage() {
+  return (
+    <Suspense fallback={<div className="py-24 text-center text-stone">Loading...</div>}>
+      <ReservationConfirmationContent />
+    </Suspense>
   );
 }

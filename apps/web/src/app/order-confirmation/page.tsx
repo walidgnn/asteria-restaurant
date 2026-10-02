@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Check, UtensilsCrossed, ShoppingBag } from "lucide-react";
@@ -24,7 +24,7 @@ type Order = {
   totalAmount: string;
   items: OrderItem[];
 };
-export default function OrderConfirmationPage() {
+function OrderConfirmationContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order");
   const { token, customer } = useAuth();
@@ -201,5 +201,13 @@ export default function OrderConfirmationPage() {
 
       <Footer />
     </>
+  );
+}
+
+export default function OrderConfirmationPage() {
+  return (
+    <Suspense fallback={<div className="py-24 text-center text-stone">Loading...</div>}>
+      <OrderConfirmationContent />
+    </Suspense>
   );
 }
