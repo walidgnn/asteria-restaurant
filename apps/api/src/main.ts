@@ -14,7 +14,7 @@ async function bootstrap() {
   app.useGlobalFilters(new CustomThrottlerExceptionFilter());
 
   app.enableCors({
-    origin: ["http://localhost:3000", "http://192.168.100.10:3000"],
+    origin: ["http://localhost:3000", "https://asteria-restaurant.vercel.app"],
   });
 
   await app.listen(process.env.PORT || 3001);
